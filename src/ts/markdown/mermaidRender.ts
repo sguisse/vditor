@@ -13,9 +13,9 @@ export const mermaidRender = (element: (HTMLElement | Document) = document, cdn 
     if (mermaidElements.length === 0) {
         return;
     }
-    addScript(`${cdn}/dist/js/mermaid/mermaid.min.js?v=11.11.0`, "vditorMermaidScript").then(() => {
+    addScript(`js/mermaid/mermaid.min.js?v=11.11.0`, "vditorMermaidScript", cdn).then(() => {
         const config: any = {
-            securityLevel: "loose", // 升级后无 https://github.com/siyuan-note/siyuan/issues/3587，可使用该选项
+            securityLevel: "loose", // Can use this option after upgrading (see https://github.com/siyuan-note/siyuan/issues/3587)
             altFontFamily: "sans-serif",
             fontFamily: "sans-serif",
             startOnLoad: false,
@@ -28,7 +28,7 @@ export const mermaidRender = (element: (HTMLElement | Document) = document, cdn 
                 diagramMarginX: 8,
                 diagramMarginY: 8,
                 boxMargin: 8,
-                showSequenceNumbers: true // Mermaid 时序图增加序号 https://github.com/siyuan-note/siyuan/pull/6992 https://mermaid.js.org/syntax/sequenceDiagram.html#sequencenumbers
+                showSequenceNumbers: true // Add sequence numbers to Mermaid sequence diagrams (see https://github.com/siyuan-note/siyuan/pull/6992 and https://mermaid.js.org/syntax/sequenceDiagram.html#sequencenumbers)
             },
             gantt: {
                 leftPadding: 75,

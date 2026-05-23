@@ -311,7 +311,7 @@ class WYSIWYG {
             });
         });
 
-        // 中文处理
+        // IME composition handling (e.g., Chinese input)
         this.element.addEventListener("compositionstart", () => {
             this.composingLock = true;
         });
@@ -319,7 +319,7 @@ class WYSIWYG {
         this.element.addEventListener("compositionend", (event: InputEvent) => {
             const headingElement = hasClosestByHeadings(getSelection().getRangeAt(0).startContainer);
             if (headingElement && headingElement.textContent === "") {
-                // heading 为空删除 https://github.com/Vanessa219/vditor/issues/150
+                // If heading is empty, update TOC (see issue) https://github.com/Vanessa219/vditor/issues/150
                 renderToc(vditor);
                 return;
             }
@@ -331,7 +331,7 @@ class WYSIWYG {
 
         this.element.addEventListener("input", (event: InputEvent) => {
             if (event.inputType === "deleteByDrag" || event.inputType === "insertFromDrop") {
-                // https://github.com/Vanessa219/vditor/issues/801 编辑器内容拖拽问题
+                // Editor drag/drop content issue (see issue) https://github.com/Vanessa219/vditor/issues/801
                 return;
             }
             if (this.preventInput) {
@@ -346,7 +346,7 @@ class WYSIWYG {
             const range = getSelection().getRangeAt(0);
             let blockElement = hasClosestBlock(range.startContainer);
             if (!blockElement) {
-                // 没有被块元素包裹
+                // Not wrapped in a block element
                 modifyPre(vditor, range);
                 blockElement = hasClosestBlock(range.startContainer);
             }
@@ -354,14 +354,14 @@ class WYSIWYG {
                 return;
             }
 
-            // 前后空格处理
+            // Handle leading and trailing spaces
             const startOffset = getSelectPosition(blockElement, vditor.wysiwyg.element, range).start;
 
-            // 开始可以输入空格
+            // Allow leading spaces
             let startSpace = true;
             for (let i = startOffset - 1; i > blockElement.textContent.substr(0, startOffset).lastIndexOf("\n"); i--) {
                 if (blockElement.textContent.charAt(i) !== " " &&
-                    // 多个 tab 前删除不形成代码块 https://github.com/Vanessa219/vditor/issues/162 1
+                    // Deleting multiple leading tabs doesn't form a code block (issue #162)
                     blockElement.textContent.charAt(i) !== "\t") {
                     startSpace = false;
                     break;
@@ -371,7 +371,7 @@ class WYSIWYG {
                 startSpace = false;
             }
 
-            // 结尾可以输入空格
+            // Allow trailing spaces
             let endSpace = true;
             for (let i = startOffset - 1; i < blockElement.textContent.length; i++) {
                 if (blockElement.textContent.charAt(i) !== " " && blockElement.textContent.charAt(i) !== "\n") {
@@ -387,7 +387,7 @@ class WYSIWYG {
 
             const headingElement = hasClosestByHeadings(getSelection().getRangeAt(0).startContainer);
             if (headingElement && headingElement.textContent === "") {
-                // heading 为空删除 https://github.com/Vanessa219/vditor/issues/150
+                // If heading is empty, update TOC and remove heading (see issue) https://github.com/Vanessa219/vditor/issues/150
                 renderToc(vditor);
                 headingElement.remove();
             }
@@ -425,7 +425,7 @@ class WYSIWYG {
             }
 
             if (event.target.tagName === "IMG" &&
-                // plantuml 图片渲染不进行提示
+                // Do not show tooltip/hint for plantuml image rendering
                 !event.target.parentElement.classList.contains("vditor-wysiwyg__preview")) {
                 if (event.target.getAttribute("data-type") === "link-ref") {
                     genLinkRefPopover(vditor, event.target);
@@ -435,7 +435,7 @@ class WYSIWYG {
                 return;
             }
 
-            // 打开链接
+            // Open link
             const a = hasClosestByMatchTag(event.target, "A");
             if (a) {
                 if (vditor.options.link.click) {
@@ -465,7 +465,7 @@ class WYSIWYG {
 
             highlightToolbarWYSIWYG(vditor);
 
-            // 点击后光标落于预览区，需展开代码块
+            // If click places cursor in preview area, expand the code block
             let previewElement = hasClosestByClassName(event.target, "vditor-wysiwyg__preview");
             if (!previewElement) {
                 previewElement =
@@ -482,8 +482,9 @@ class WYSIWYG {
             if (event.isComposing || isCtrl(event)) {
                 return;
             }
-            // 除 md 处理、cell 内换行、table 添加新行/列、代码块语言切换、block render 换行、跳出/逐层跳出 blockquote、h6 换行、
-            // 任务列表换行、软换行外需在换行时调整文档位置
+            // Adjust document position on Enter except for special cases (md handling, cell line breaks, table row/col add,
+            // code-block language switch, block render line breaks, exiting nested blockquotes, H6 line breaks,
+            // task list line breaks, and soft line breaks)
             if (event.key === "Enter") {
                 scrollCenter(vditor);
             }
@@ -492,7 +493,7 @@ class WYSIWYG {
                 vditor.wysiwyg.element.firstElementChild && vditor.wysiwyg.element.firstElementChild.tagName === "P"
                 && vditor.wysiwyg.element.firstElementChild.childElementCount === 0
                 && (vditor.wysiwyg.element.textContent === "" || vditor.wysiwyg.element.textContent === "\n")) {
-                // 为空时显示 placeholder
+                // Show placeholder when empty
                 vditor.wysiwyg.element.innerHTML = "";
             }
             const range = getEditorRange(vditor);
@@ -503,7 +504,7 @@ class WYSIWYG {
                 }
             }
 
-            // 没有被块元素包裹
+            // Not wrapped in a block element
             modifyPre(vditor, range);
 
             highlightToolbarWYSIWYG(vditor);
@@ -517,10 +518,10 @@ class WYSIWYG {
                 vditor.hint.render(vditor);
             }
 
-            // 上下左右，删除遇到块预览的处理
+            // Handle arrow keys and delete when encountering block preview
             let previewElement = hasClosestByClassName(range.startContainer, "vditor-wysiwyg__preview");
             if (!previewElement && range.startContainer.nodeType !== 3 && range.startOffset > 0) {
-                // table 前删除遇到代码块
+                // Deleting before a table may encounter a code block
                 const blockRenderElement = range.startContainer as HTMLElement;
                 if (blockRenderElement.classList.contains("vditor-wysiwyg__block")) {
                     previewElement = blockRenderElement.lastElementChild as HTMLElement;
@@ -548,14 +549,14 @@ class WYSIWYG {
                 const blockRenderElement = previewElement.parentElement;
                 let nextNode = getRenderElementNextNode(blockRenderElement) as HTMLElement;
                 if (nextNode && nextNode.nodeType !== 3) {
-                    // 下一节点依旧为代码渲染块
+                    // Next node is still a code render block
                     const nextRenderElement = nextNode.querySelector(".vditor-wysiwyg__preview") as HTMLElement;
                     if (nextRenderElement) {
                         showCode(nextRenderElement, vditor);
                         return;
                     }
                 }
-                // 跳过渲染块，光标移动到下一个节点
+                // Skip render block and move cursor to the next node
                 if (nextNode.nodeType === 3) {
                     // inline
                     while (nextNode.textContent.length === 0 && nextNode.nextSibling) {

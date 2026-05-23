@@ -217,49 +217,49 @@ declare class Lute {
     // debugger md
     public RenderEChartsJSON(text: string): string;
 
-    // md 转换为 html
+    // Convert markdown to HTML
     public Md2HTML(markdown: string): string;
 
-    // 粘贴时将 html 转换为 md
+    // Convert HTML to markdown when pasting
     public HTML2Md(html: string): string;
 
-    // wysiwyg 转换为 html
+    // Convert wysiwyg to HTML
     public VditorDOM2HTML(vhtml: string): string;
 
-    // wysiwyg 输入渲染
+    // WYSIWYG input rendering
     public SpinVditorDOM(html: string): string;
 
-    // 粘贴时将 html 转换为 wysiwyg
+    // Convert HTML to WYSIWYG when pasting
     public HTML2VditorDOM(html: string): string;
 
-    // 将 wysiwyg 转换为 md
+    // Convert WYSIWYG to markdown
     public VditorDOM2Md(html: string): string;
 
-    // 将 md 转换为 wysiwyg
+    // Convert markdown to WYSIWYG
     public Md2VditorDOM(markdown: string): string;
 
-    // ir 输入渲染
+    // IR input rendering
     public SpinVditorIRDOM(markdown: string): string;
 
-    // ir 获取 md
+    // Get markdown from IR
     public VditorIRDOM2Md(html: string): string;
 
-    // md 转换为 ir
+    // Convert markdown to IR
     public Md2VditorIRDOM(text: string): string;
 
-    // 获取 HTML
+    // Get HTML
     public VditorIRDOM2HTML(html: string): string;
 
-    // 粘贴时将 html 转换为 sv
+    // Convert HTML to SV when pasting
     public HTML2VditorIRDOM(html: string): string;
 
-    // sv 输入渲染
+    // SV input rendering
     public SpinVditorSVDOM(text: string): string;
 
-    // 粘贴是 md 转换为 sv
+    // Convert markdown to SV when pasting
     public Md2VditorSVDOM(text: string): string;
 
-    // 将markdown转化为JSON结构输出 https://github.com/88250/lute/issues/120
+    // Render markdown to JSON structure https://github.com/88250/lute/issues/120
     public RenderJSON(markdown: string): string;
 }
 
@@ -377,170 +377,170 @@ interface IPreviewTheme {
 
 /** @link https://ld246.com/article/1549638745630#options-upload */
 interface IUpload {
-    /** 上传 url */
+    /** Upload URL */
     url?: string;
-    /** 上传文件最大 Byte */
+    /** Max upload file size in bytes */
     max?: number;
-    /** 剪切板中包含图片地址时，使用此 url 重新上传 */
+    /** When clipboard contains image URLs, use this URL to re-upload */
     linkToImgUrl?: string;
 
-    /** 剪切板中包含图片地址时，使用此方法进行自定义 */
+    /** Custom renderer when clipboard contains image URLs */
     renderLinkDest?(vditor: IVditor, node: ILuteNode, entering: boolean): [string, number];
 
-    /** CORS 上传验证，头为 X-Upload-Token */
+    /** CORS upload token header: X-Upload-Token */
     token?: string;
-    /** 文件上传类型，同 [input accept](https://www.w3schools.com/tags/att_input_accept.asp) */
+    /** Accepted file types, same as input accept */
     accept?: string;
-    /** 跨站点访问控制。默认值: false */
+    /** WithCredentials for cross-site requests. Default: false */
     withCredentials?: boolean;
-    /** 请求头设置 */
+    /** Request headers */
     headers?: IObject;
-    /** 额外请求参数 */
+    /** Extra request parameters */
     extraData?: {[key: string]: string | Blob};
-    /** 是否允许多文件上传。默认值：true */
+    /** Allow multiple file upload. Default: true */
     multiple?: boolean;
-    /** 上传字段名。默认值：file[] */
+    /** Upload field name. Default: file[] */
     fieldName?: string;
 
-    /** 每次上传前都会重新设置请求头 */
+    /** Function to set headers before each upload */
     setHeaders?(): IObject;
 
-    /** 上传成功回调 */
+    /** Upload success callback */
     success?(editor: HTMLPreElement, msg: string): void;
 
-    /** 上传失败回调 */
+    /** Upload failure callback */
     error?(msg: string): void;
 
-    /** 文件名安全处理。 默认值: name => name.replace(/\W/g, '') */
+    /** Filename sanitizer. Default: name => name.replace(/\W/g, '') */
     filename?(name: string): string;
 
-    /** 校验，成功时返回 true 否则返回错误信息 */
+    /** Validation: return true on success, otherwise return an error message */
     validate?(files: File[]): string | boolean;
 
-    /** 自定义上传，当发生错误时返回错误信息 */
+    /** Custom upload handler: return error message on failure */
     handler?(files: File[]): string | null | Promise<string> | Promise<null>;
 
-    //将dataUrl上传到服务器，并返回获取数据的url
+    // Upload a dataUrl to the server and return the accessible URL
     handleDataUrl?(dataUrl: string): string | Promise<string>;
 
-    /** 将图片的 base64 转换为链接 */
+    /** Convert image base64 to a link */
     base64ToLink?(responseText: string): string;
 
-    /** 对服务端返回的数据进行转换，以满足内置的数据结构 */
+    /** Transform server response data to match the built-in format */
     format?(files: File[], responseText: string): string;
 
-    /** 对服务端返回的数据进行转换(对应linkToImgUrl)，以满足内置的数据结构 */
+    /** Transform server response data for linkToImgUrl to match the built-in format */
     linkToImgFormat?(responseText: string): string;
 
-    /** 将上传的文件处理后再返回  */
+    /** Process uploaded files before returning */
     file?(files: File[]): File[] | Promise<File[]>;
 
-    /** 取消正在上传的文件  */
+    /** Cancel files that are being uploaded */
     cancel?(files: File[]): void;
 
-    /** 图片地址上传后的回调  */
+    /** Callback after image URL upload */
     linkToImgCallback?(responseText: string): void;
 }
 
 /** @link https://ld246.com/article/1549638745630#options-toolbar */
 interface IMenuItem {
-    /** 唯一标示 */
+    /** Unique identifier */
     name: string;
-    /** svg 图标 HTML */
+    /** SVG icon HTML */
     icon?: string;
-    /** 元素的样式名称 */
+    /** Element class name */
     className?: string;
-    /** 提示 */
+    /** Tooltip */
     tip?: string;
-    /** 快捷键，支持⌘/ctrl-key 或 ⌘/ctrl-⇧/shift-key 格式的配置，不支持 wysiwyg 模式 */
+    /** Hotkey, supports ⌘/ctrl or ⌘/ctrl-⇧/shift formats; not supported in WYSIWYG mode */
     hotkey?: string;
-    /** 插入编辑器中的后缀 */
+    /** Suffix inserted into the editor */
     suffix?: string;
-    /** 插入编辑器中的前缀 */
+    /** Prefix inserted into the editor */
     prefix?: string;
-    /** 提示位置：ne, nw */
+    /** Tooltip position: ne, nw */
     tipPosition?: string;
-    /** 子菜单 */
+    /** Submenu */
     toolbar?: Array<string | IMenuItem>;
-    /** 菜单层级，最大为 3，内部使用 */
+    /** Menu level (max 3), for internal use */
     level?: number;
 
-    /** 自定义按钮点击时触发的事件 */
+    /** Event triggered when a custom button is clicked */
     click?(event: Event, vditor: IVditor): void;
 }
 
 /** @link https://ld246.com/article/1549638745630#options-preview-hljs */
 interface IHljs {
-    /** 代码块没有指定语言时，使用此值。默认值: "" */
+    /** Default language when code block has no language specified. Default: "" */
     defaultLang?: string;
-    /** 是否启用行号。默认值: false */
+    /** Enable line numbers. Default: false */
     lineNumber?: boolean;
-    /** 代码风格，可选值参见 [Chroma](https://xyproto.github.io/splash/docs/longer/all.html)。 默认值: 'github' */
+    /** Code style, available values: see [Chroma](https://xyproto.github.io/splash/docs/longer/all.html). Default: 'github' */
     style?: string;
-    /** 是否启用代码高亮。默认值: true */
+    /** Enable code highlighting. Default: true */
     enable?: boolean;
-    /** 自定义指定语言: CODE_LANGUAGES */
+    /** Custom specified languages: CODE_LANGUAGES */
     langs?: string[];
 
-    /** 渲染右上角菜单按钮 */
+    /** Render menu button at the top-right */
     renderMenu?(element: HTMLElement, menuElement: HTMLElement): void;
 }
 
 /** @link https://ld246.com/article/1549638745630#options-preview-math */
 interface IMath {
-    /** 内联数学公式起始 $ 后是否允许数字。默认值: false */
+    /** Allow digits immediately after inline math opening $ marker. Default: false */
     inlineDigit?: boolean;
-    /** 使用 MathJax 渲染时传入的宏定义。默认值: {} */
+    /** Macros passed when using MathJax. Default: {} */
     macros?: object;
-    /** 数学公式渲染引擎。默认值: 'KaTeX' */
+    /** Math rendering engine. Default: 'KaTeX' */
     engine?: "KaTeX" | "MathJax";
-    /** 数学公式渲染引擎为 MathJax 时传入的参数 */
+    /** Options to pass when using MathJax as the rendering engine */
     mathJaxOptions?: any;
 }
 
 /** @link https://ld246.com/article/1549638745630#options-preview-markdown */
 interface IMarkdownConfig {
-    /** 自动空格。默认值: false */
+    /** Automatic spacing. Default: false */
     autoSpace?: boolean;
-    /** 段落开头是否空两格。默认值: false */
+    /** Insert two spaces at paragraph beginning. Default: false */
     paragraphBeginningSpace?: boolean;
-    /** 自动矫正术语。默认值: false */
+    /** Auto-correct terms. Default: false */
     fixTermTypo?: boolean;
-    /** 插入目录。默认值: false */
+    /** Insert table of contents. Default: false */
     toc?: boolean;
-    /** 脚注。默认值: true */
+    /** Footnotes. Default: true */
     footnotes?: boolean;
-    /** wysiwyg & ir 模式代码块是否渲染。默认值: true */
+    /** Render code blocks in WYSIWYG & IR modes. Default: true */
     codeBlockPreview?: boolean;
-    /** wysiwyg & ir 模式数学公式块是否渲染。默认值: true */
+    /** Render math blocks in WYSIWYG & IR modes. Default: true */
     mathBlockPreview?: boolean;
-    /** 是否启用过滤 XSS。默认值: true */
+    /** Enable XSS sanitization. Default: true */
     sanitize?: boolean;
-    /** 链接相对路径前缀。默认值：'' */
+    /** Link relative path prefix. Default: '' */
     linkBase?: string;
-    /** 链接强制前缀。默认值：'' */
+    /** Link forced prefix. Default: '' */
     linkPrefix?: string;
-    /** 为列表添加标记，以便[自定义列表样式](https://github.com/Vanessa219/vditor/issues/390) 默认值：false */
+    /** Add markers to lists for custom list styles. Default: false */
     listStyle?: boolean;
-    /** 支持 mark 标记 */
+    /** Support for mark syntax */
     mark?: boolean;
-    /** 支持自动链接 */
+    /** Support automatic links */
     gfmAutoLink?: boolean;
-    /** 支持上标 */
+    /** Support superscript */
     sup?: boolean;
-    /** 支持下标 */
+    /** Support subscript */
     sub?: boolean;
 }
 
 /** @link https://ld246.com/article/1549638745630#options-preview */
 interface IPreview {
-    /** 预览 debounce 毫秒间隔。默认值: 1000 */
+    /** Preview debounce interval in milliseconds. Default: 1000 */
     delay?: number;
-    /** 预览区域最大宽度。默认值: 768 */
+    /** Preview maximum width in pixels. Default: 768 */
     maxWidth?: number;
-    /** 显示模式。默认值: 'both' */
+    /** Display mode. Default: 'both' */
     mode?: "both" | "editor";
-    /** md 解析请求 */
+    /** Markdown parsing request URL */
     url?: string;
     /** @link https://ld246.com/article/1549638745630#options-preview-hljs */
     hljs?: IHljs;
@@ -554,10 +554,10 @@ interface IPreview {
     actions?: Array<IPreviewAction | IPreviewActionCustom>;
     render?: IPreviewRender;
 
-    /** 预览回调 */
+    /** Preview callback */
     parse?(element: HTMLElement): void;
 
-    /** 渲染之前回调 */
+    /** Callback before rendering (transform HTML) */
     transform?(html: string): string;
 }
 
@@ -570,16 +570,31 @@ interface IPreviewRender {
 type IPreviewAction = "desktop" | "tablet" | "mobile" | "mp-wechat" | "zhihu";
 
 interface IPreviewActionCustom {
-    /** 键名 */
+    /**Key name */
     key: string;
-    /** 按钮文本 */
+    /**Button text */
     text: string;
-    /** 按钮 className 值 */
+    /**Button className value */
     className?: string;
-    /** 按钮提示信息 */
+    /** Button prompt information */
     tooltip?: string;
-    /** 点击回调 */
+    /** Click callback */
     click: (key: string) => void;
+}
+
+interface IRenderersCDN {
+    mermaid?: { cdn?: string };
+    math?: { cdn?: string };
+    echarts?: { cdn?: string };
+    chart?: { cdn?: string };
+    mindmap?: { cdn?: string };
+    abc?: { cdn?: string };
+    graphviz?: { cdn?: string };
+    flowchart?: { cdn?: string };
+    plantuml?: { cdn?: string };
+    markmap?: { cdn?: string };
+    smiles?: { cdn?: string };
+    highlight?: { cdn?: string };
 }
 
 interface IPreviewOptions {
@@ -596,6 +611,7 @@ interface IPreviewOptions {
     anchor?: number; // 0: no render, 1: render left, 2: render right
     math?: IMath;
     cdn?: string;
+    renderersCDN?: IRenderersCDN;
     markdown?: IMarkdownConfig;
     renderers?: ILuteRender;
     theme?: IPreviewTheme;
@@ -620,50 +636,50 @@ interface IHintExtend {
 
 /** @link https://ld246.com/article/1549638745630#options-hint */
 interface IHint {
-    /** 提示内容是否进行 md 解析 */
+    /** Prompt content whether to perform md analysis */
     parse?: boolean;
-    /** 常用表情提示 HTML */
+    /** Commonly used emoticon tips HTML */
     emojiTail?: string;
-    /** 提示 debounce 毫秒间隔。默认值: 200 */
+    /** Hint debounce millisecond interval. Default value: 200 */
     delay?: number;
-    /** 默认表情，可从 [lute/emoji_map](https://github.com/88250/lute/blob/master/parse/emoji_map.go#L32) 中选取，也可自定义 */
+    /** The default expression can be selected from [lute/emoji_map](https://github.com/88250/lute/blob/master/parse/emoji_map.go#L32) or customized*/
     emoji?: IObject;
-    /** 表情图片地址。默认值: 'https://unpkg.com/vditor@${VDITOR_VERSION}/dist/images/emoji' */
+    /** Emoticon picture address. default value: 'https://unpkg.com/vditor@${VDITOR_VERSION}/dist/images/emoji' */
     emojiPath?: string;
     extend?: IHintExtend[];
 }
 
 /** @link https://ld246.com/article/1549638745630#options-toolbarConfig */
 interface IToolbarConfig {
-    /** 是否隐藏工具栏。默认值: false */
+    /** Whether to hide the toolbar. default value: false */
     hide?: boolean;
-    /** 是否固定工具栏。默认值: false */
+    /** Whether to pin the toolbar. default value: false */
     pin?: boolean;
 }
 
 /** @link https://ld246.com/article/1549638745630#options-comment */
 interface IComment {
-    /** 是否启用评论模式。默认值: false */
+    /** Whether to enable comment mode. default value: false */
     enable: boolean;
 
-    /** 添加评论回调 */
+    /** Add comment callback */
     add?(id: string, text: string, commentsData: ICommentsData[]): void;
 
-    /** 删除评论回调 */
+    /** Delete comment callback */
     remove?(ids: string[]): void;
 
-    /** 滚动回调 */
+    /** scroll callback */
     scroll?(top: number): void;
 
-    /** 文档修改时，适配评论高度 */
+    /** When the document is modified, adapt the comment height */
     adjustTop?(commentsData: ICommentsData[]): void;
 }
 
 /** @link https://ld246.com/article/1549638745630#options-outline */
 interface IOutline {
-    /** 初始化是否展现大纲。默认值: false */
+    /** Initialize whether to display the outline. default value: false */
     enable: boolean;
-    /** 大纲位置：'left', 'right'。默认值: 'left' */
+    /** Outline position: 'left', 'right'. default value: 'left' */
     position: "left" | "right";
 }
 
@@ -678,31 +694,31 @@ interface IResize {
 interface IOptions {
     /** RTL */
     rtl?: boolean;
-    /** 历史记录间隔 */
+    /** history interval */
     undoDelay?: number;
-    /** 内部调试时使用 */
+    /** Used during internal debugging */
     _lutePath?: string;
-    /** 编辑器初始化值。默认值: '' */
+    /** Editor initialization value. default value: '' */
     value?: string;
-    /** 是否显示日志。默认值: false */
+    /** Whether to display the log. default value: false */
     debugger?: boolean;
-    /** 是否启用打字机模式。默认值: false */
+    /** Whether to enable typewriter mode. default value: false */
     typewriterMode?: boolean;
-    /** 编辑器总高度。默认值: 'auto' */
+    /** The total height of the editor. default value: 'auto' */
     height?: number | string;
-    /** 编辑器最小高度 */
+    /** Editor minimum height */
     minHeight?: number;
-    /** 编辑器总宽度，支持 %。默认值: 'auto' */
+    /** The total editor width, supports %. Default value: 'auto' */
     width?: number | string;
-    /** 输入区域为空时的提示。默认值: '' */
+    /** Prompt when the input area is empty. default value: '' */
     placeholder?: string;
-    /** 多语言。默认值: 'zh_CN' */
+    /** Multilingual. default value: 'zh_CN' */
     lang?: (keyof II18n);
-    /** 国际化, 自定义语言。优先级低于lang */
+    /** Internationalization, custom languages. Priority lower than lang */
     i18n?: ITips;
     /** @link https://ld246.com/article/1549638745630#options-fullscreen */
     fullscreen?: {
-        /** 全屏层级。默认值: 90 */
+        /** Full screen level. default value: 90 */
         index: number;
     };
     /** @link https://ld246.com/article/1549638745630#options-toolbar */
@@ -711,75 +727,77 @@ interface IOptions {
     resize?: IResize;
     /** @link https://ld246.com/article/1549638745630#options-counter */
     counter?: {
-        /** 是否启用计数器。默认值: false */
+        /** Enable counter. Default: false */
         enable: boolean;
-        /** 允许输入的最大值 */
+        /** Maximum allowed input */
         max?: number;
-        /** 统计类型。默认值: 'markdown' */
+        /** Counter type. Default: 'markdown' */
         type?: "markdown" | "text";
-        /** 字数统计回调。 */
+        /** Word/character count callback. */
         after?(length: number, counter: {
-            /** 是否启用计数器。默认值: false */
+            /** Enable counter. Default: false */
             enable: boolean;
-            /** 允许输入的最大值 */
+            /** Maximum allowed input */
             max?: number;
-            /** 统计类型。默认值: 'markdown' */
+            /** Counter type. Default: 'markdown' */
             type?: "markdown" | "text"
         }): void
     };
     /** @link https://ld246.com/article/1549638745630#options-cache */
     cache?: {
-        /** 缓存 key，第一个参数为元素且启用缓存时必填 */
+        /** Cache key; required when the first parameter is an element and caching is enabled */
         id?: string;
-        /** 是否使用 localStorage 进行缓存。默认值: true */
+        /** Use localStorage for caching. Default: true */
         enable?: boolean;
-        /** 缓存后的回调 */
+        /** Callback after caching */
         after?(markdown: string): void;
     };
-    /** 编辑模式。默认值: 'wysiwyg'
+    /** Editor mode. Default: 'wysiwyg'
      *
-     * wysiwyg: 所见即所得
+     * wysiwyg: WYSIWYG
      *
-     * ir: 即时渲染
+     * ir: Instant rendering
      *
-     * sv: 分屏预览
+     * sv: Split view preview
      */
     mode?: "wysiwyg" | "sv" | "ir";
     /** @link https://ld246.com/article/1549638745630#options-preview */
     preview?: IPreview;
     /** @link https://ld246.com/article/1549638745630#options-link */
     link?: {
-        /** 是否打开链接地址。默认值: true */
+        /** Open links by default. Default: true */
         isOpen?: boolean;
-        /** 点击链接事件 */
+        /** Link click event */
         click?: (bom: Element) => void;
     },
     /** @link https://ld246.com/article/1549638745630#options-image */
     image?: {
-        /** 是否预览图片。默认值: true */
+        /** Preview images. Default: true */
         isPreview?: boolean;
-        /** 图片预览处理 */
+        /** Image preview handler */
         preview?: (bom: Element) => void;
     },
     /** @link https://ld246.com/article/1549638745630#options-hint */
     hint?: IHint;
     /** @link https://ld246.com/article/1549638745630#options-toolbarConfig */
     toolbarConfig?: IToolbarConfig;
-    /** 评论
+    /** Comment options
      * @link https://ld246.com/article/1549638745630#options-comment
      */
     comment?: IComment;
-    /** 主题。默认值: 'classic' */
+    /** Theme. Default: 'classic' */
     theme?: "classic" | "dark";
-    /** 图标。默认值: 'ant' */
+    /** Icon pack. Default: 'ant' */
     icon?: "ant" | "material";
     /** @link https://ld246.com/article/1549638745630#options-upload */
     upload?: IUpload;
     /** @link https://ld246.com/article/1549638745630#options-classes */
     classes?: IClasses;
-    /** 配置自建 CDN 地址。默认值: 'https://unpkg.com/vditor@${VDITOR_VERSION}' */
+    /** Configure custom CDN URL. Default: 'https://unpkg.com/vditor@${VDITOR_VERSION}' */
     cdn?: string;
-    /** tab 键操作字符串，支持 \t 及任意字符串 */
+    /** Configure CDN URLs for various renderers */
+    renderersCDN?: IRenderersCDN;
+    /** Tab key operation string; supports \t or any string */
     tab?: string;
     /** @link https://ld246.com/article/1549638745630#options-outline */
     outline?: IOutline;
@@ -788,34 +806,34 @@ interface IOptions {
         render: (element: HTMLElement, vditor: IVditor) => void
     }[],
 
-    /** 编辑器异步渲染完成后的回调方法 */
+    /** Callback after editor async rendering completes */
     after?(): void;
 
-    /** 输入后触发 */
+    /** Triggered after input */
     input?(value: string): void;
 
-    /** 聚焦后触发  */
+    /** Triggered after focus */
     focus?(value: string): void;
 
-    /** 失焦后触发 */
+    /** Triggered after blur */
     blur?(value: string): void;
 
-    /** 按下键盘触发 */
+    /** Triggered on keydown */
     keydown?(event: KeyboardEvent): void;
 
-    /** `esc` 按下后触发 */
+    /** Triggered when `esc` is pressed */
     esc?(value: string): void;
 
-    /** `⌘/ctrl+enter` 按下后触发 */
+    /** Triggered when `⌘/ctrl+enter` is pressed */
     ctrlEnter?(value: string): void;
 
-    /** 编辑器中选中文字后触发 */
+    /** Triggered after selecting text in the editor */
     select?(value: string): void;
 
-    /** 编辑器中未选中文字后触发 */
+    /** Triggered when no text is selected */
     unSelect?(): void;
 
-    /** 对 wysiwyg 模式下的工具栏进行自定义 */
+    /** Customize WYSIWYG toolbar */
     customWysiwygToolbar?(type: TWYSISYGToolbar, element: HTMLElement): void
 }
 

@@ -41,9 +41,9 @@ export const mathRender = (element: (HTMLElement | Document) = document, options
     options = Object.assign({}, defaultOptions, options);
 
     if (options.math.engine === "KaTeX") {
-        addStyle(`${options.cdn}/dist/js/katex/katex.min.css?v=0.16.9`, "vditorKatexStyle");
-        addScript(`${options.cdn}/dist/js/katex/katex.min.js?v=0.16.9`, "vditorKatexScript").then(() => {
-            addScript(`${options.cdn}/dist/js/katex/mhchem.min.js?v=0.16.9`, "vditorKatexChemScript").then(() => {
+        addStyle(`js/katex/katex.min.css?v=0.16.9`, "vditorKatexStyle", options.cdn);
+        addScript(`js/katex/katex.min.js?v=0.16.9`, "vditorKatexScript", options.cdn).then(() => {
+            addScript(`js/katex/mhchem.min.js?v=0.16.9`, "vditorKatexChemScript", options.cdn).then(() => {
                 mathElements.forEach((mathElement) => {
                     if (mathElement.parentElement.classList.contains("vditor-wysiwyg__pre") ||
                         mathElement.parentElement.classList.contains("vditor-ir__marker--pre")) {
@@ -92,7 +92,7 @@ export const mathRender = (element: (HTMLElement | Document) = document, options
         if (!window.MathJax) {
             window.MathJax = {
                 loader: {
-                    paths: {mathjax: `${options.cdn}/dist/js/mathjax`},
+                    paths: {mathjax: `js/mathjax`},
                 },
                 startup: {
                     typeset: false,
@@ -104,8 +104,8 @@ export const mathRender = (element: (HTMLElement | Document) = document, options
             // https://github.com/Vanessa219/vditor/issues/1453
             Object.assign(window.MathJax, options.math.mathJaxOptions);
         }
-        // 循环加载会抛异常
-        addScriptSync(`${options.cdn}/dist/js/mathjax/tex-svg-full.js`, "protyleMathJaxScript");
+        // Repeated loading may throw exceptions
+        addScriptSync(`js/mathjax/tex-svg-full.js`, "protyleMathJaxScript", options.cdn);
         const renderMath = (mathElement: Element, next?: () => void) => {
             const math = code160to32(mathElement.textContent).trim();
             const mathOptions = window.MathJax.getMetricsFor(mathElement);

@@ -11,16 +11,16 @@ export const inputEvent = (vditor: IVditor, event?: InputEvent) => {
         startContainer = range.startContainer.childNodes[range.startOffset - 1];
     }
     let blockElement = hasClosestByAttribute(startContainer, "data-block", "0");
-    // 不调用 lute 解析
+    // Do not invoke lute parsing
     if (blockElement && event && (event.inputType === "deleteContentBackward" || event.data === " ")) {
-        // 开始可以输入空格
+        // Allow entering leading spaces
         const startOffset = getSelectPosition(blockElement, vditor.sv.element, range).start;
         let startSpace = true;
         for (let i = startOffset - 1;
-            // 软换行后有空格
+            // There may be spaces after a soft line break
              i > blockElement.textContent.substr(0, startOffset).lastIndexOf("\n"); i--) {
             if (blockElement.textContent.charAt(i) !== " " &&
-                // 多个 tab 前删除不形成代码块 https://github.com/Vanessa219/vditor/issues/162 1
+                // Deleting multiple leading tabs does not form a code block https://github.com/Vanessa219/vditor/issues/162
                 blockElement.textContent.charAt(i) !== "\t") {
                 startSpace = false;
                 break;
@@ -35,7 +35,7 @@ export const inputEvent = (vditor: IVditor, event?: InputEvent) => {
         }
 
         if (event.inputType === "deleteContentBackward") {
-            // https://github.com/Vanessa219/vditor/issues/584 代码块 marker 删除
+            // https://github.com/Vanessa219/vditor/issues/584 code block marker deletion
             const codeBlockMarkerElement =
                 hasClosestByAttribute(startContainer, "data-type", "code-block-open-marker") ||
                 hasClosestByAttribute(startContainer, "data-type", "code-block-close-marker");
@@ -57,7 +57,7 @@ export const inputEvent = (vditor: IVditor, event?: InputEvent) => {
                     }
                 }
             }
-            // https://github.com/Vanessa219/vditor/issues/877 数学公式输入删除生成节点
+            // https://github.com/Vanessa219/vditor/issues/877 math formula input deletion generating nodes
             const mathBlockMarkerElement =
                 hasClosestByAttribute(startContainer, "data-type", "math-block-open-marker");
             if (mathBlockMarkerElement) {
@@ -80,26 +80,26 @@ export const inputEvent = (vditor: IVditor, event?: InputEvent) => {
                 }
             });
 
-            // 标题删除
+            // Heading deletion
             const headingElement = hasClosestByAttribute(startContainer, "data-type", "heading-marker");
             if (headingElement && headingElement.textContent.indexOf("#") === -1) {
                 processAfterRender(vditor);
                 return;
             }
         }
-        // 删除或空格不解析，否则会 format 回去
+        // Do not parse on delete or space, otherwise it will be reformatted
         if ((event.data === " " || event.inputType === "deleteContentBackward") &&
-            (hasClosestByAttribute(startContainer, "data-type", "padding") // 场景：b 前进行删除 [> 1. a\n>   b]
-                || hasClosestByAttribute(startContainer, "data-type", "li-marker")  // 场景：删除最后一个字符 [* 1\n* ]
-                || hasClosestByAttribute(startContainer, "data-type", "task-marker")  // 场景：删除最后一个字符 [* [ ] ]
-                || hasClosestByAttribute(startContainer, "data-type", "blockquote-marker")  // 场景：删除最后一个字符 [> ]
+            (hasClosestByAttribute(startContainer, "data-type", "padding") // Scenario: deleting before 'b' in blockquote [> 1. a\n>   b]
+                || hasClosestByAttribute(startContainer, "data-type", "li-marker")  // Scenario: deleting the last character [* 1\n* ]
+                || hasClosestByAttribute(startContainer, "data-type", "task-marker")  // Scenario: deleting the last character in task list [* [ ] ]
+                || hasClosestByAttribute(startContainer, "data-type", "blockquote-marker")  // Scenario: deleting the last character from blockquote [> ]
             )) {
             processAfterRender(vditor);
             return;
         }
     }
     if (blockElement && blockElement.textContent.trimRight() === "$$") {
-        // 内联数学公式
+        // Inline math expression
         processAfterRender(vditor);
         return;
     }
@@ -107,23 +107,23 @@ export const inputEvent = (vditor: IVditor, event?: InputEvent) => {
         blockElement = vditor.sv.element;
     }
     if (blockElement.firstElementChild?.getAttribute("data-type") === "link-ref-defs-block") {
-        // 修改链接引用
+        // Modify link reference definitions
         blockElement = vditor.sv.element;
     }
     if (hasClosestByAttribute(startContainer, "data-type", "footnotes-link")) {
-        // 修改脚注角标
+        // Modify footnote markers
         blockElement = vditor.sv.element;
     }
-    // 添加光标位置
+    // Insert caret position
     if (blockElement.textContent.indexOf(Lute.Caret) === -1) {
-        // 点击工具栏会插入 Caret
+        // Clicking the toolbar will insert Caret
         range.insertNode(document.createTextNode(Lute.Caret));
     }
-    // 清除浏览器自带的样式
-    blockElement.querySelectorAll("[style]").forEach((item) => { // 不可前置，否则会影响 newline 的样式
+    // Remove browser inline styles
+    blockElement.querySelectorAll("[style]").forEach((item) => { // Cannot run earlier; it would affect newline styles
         item.removeAttribute("style");
     });
-    blockElement.querySelectorAll("font").forEach((item) => { // 不可前置，否则会影响光标的位置
+    blockElement.querySelectorAll("font").forEach((item) => { // Cannot run earlier; it would affect caret position
         item.outerHTML = item.innerHTML;
     });
     let html = blockElement.textContent;
@@ -131,17 +131,17 @@ export const inputEvent = (vditor: IVditor, event?: InputEvent) => {
     if (isSVElement) {
         html = blockElement.textContent;
     } else {
-        // 添加前一个块元素
+        // Append previous block element's content
         if (blockElement.previousElementSibling) {
             html = blockElement.previousElementSibling.textContent + html;
             blockElement.previousElementSibling.remove();
         }
         if (blockElement.previousElementSibling && html.indexOf("---\n") === 0) {
-            // 确认 yaml-front 是否为首行
+            // Confirm whether YAML front matter is at the first line
             html = blockElement.previousElementSibling.textContent + html;
             blockElement.previousElementSibling.remove();
         }
-        // 添加链接引用
+        // Append link reference definitions
         let footnotes = ""
 
         vditor.sv.element.querySelectorAll("[data-type='link-ref-defs-block']").forEach((item, index) => {
@@ -151,7 +151,7 @@ export const inputEvent = (vditor: IVditor, event?: InputEvent) => {
             }
         });
 
-        // 添加脚注到文章头，便于lute处理
+        // Append footnotes to the top of the document to facilitate lute processing
         vditor.sv.element.querySelectorAll("[data-type='footnotes-link']").forEach((item, index) => {
             if (item && !(blockElement as HTMLElement).isEqualNode(item.parentElement)) {
                 footnotes += item.parentElement.textContent + "\n";
@@ -171,7 +171,7 @@ export const inputEvent = (vditor: IVditor, event?: InputEvent) => {
         vditor.sv.element.insertAdjacentElement("beforeend", item.parentElement)
     })
 
-    // 合并脚注
+    // Combine footnotes
     combineFootnote(vditor.sv.element, (root: HTMLElement) => {
         vditor.sv.element.insertAdjacentElement("beforeend", root)
     })

@@ -9,11 +9,8 @@ export const highlightRender = (hljsOption?: IHljs, element: HTMLElement | Docum
         style = "github";
     }
     const vditorHljsStyle = document.getElementById("vditorHljsStyle") as HTMLLinkElement;
-    const href = `${cdn}/dist/js/highlight.js/styles/${style}.min.css`;
-    if (vditorHljsStyle && vditorHljsStyle.getAttribute('href') !== href) {
-        vditorHljsStyle.remove();
-    }
-    addStyle(`${cdn}/dist/js/highlight.js/styles/${style}.min.css`, "vditorHljsStyle");
+    const href = `js/highlight.js/styles/${style}.min.css`;
+    addStyle(href, "vditorHljsStyle", cdn);
 
     if (hljsOption.enable === false) {
         return;
@@ -24,10 +21,10 @@ export const highlightRender = (hljsOption?: IHljs, element: HTMLElement | Docum
         return;
     }
 
-    addScript(`${cdn}/dist/js/highlight.js/highlight.min.js?v=11.7.0`, "vditorHljsScript").then(() => {
-        addScript(`${cdn}/dist/js/highlight.js/third-languages.js?v=1.0.1`, "vditorHljsThirdScript").then(() => {
+    addScript(`js/highlight.js/highlight.min.js?v=11.7.0`, "vditorHljsScript", cdn).then(() => {
+        addScript(`js/highlight.js/third-languages.js?v=1.0.1`, "vditorHljsThirdScript", cdn).then(() => {
             element.querySelectorAll("pre > code").forEach((block) => {
-                // ir & wysiwyg 区域不渲染
+                // Do not render inside IR & WYSIWYG areas
                 if (block.parentElement.classList.contains("vditor-ir__marker--pre") ||
                     block.parentElement.classList.contains("vditor-wysiwyg__pre")) {
                     return;

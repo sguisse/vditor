@@ -64,14 +64,14 @@ const renderComments = (ids) => {
     cmtElement.setAttribute('data-id', commentData.id)
     cmtElement.setAttribute('style', `top:${commentData.top}px`)
     cmtElement.innerHTML = `<div>
-${text}<br>
-<button>删除</button><br>
-<input>
-</div>`
+  ${text}<br>
+  <button>Delete</button><br>
+  <input>
+  </div>`
     cmtElement.value = text
     document.getElementById('comments').
       insertAdjacentElement('beforeend', cmtElement)
-    // 高度调整
+    // Height adjustment
     const previousElement = cmtElement.previousElementSibling
     if (previousElement) {
       const previousTop = parseInt(previousElement.style.top) +
@@ -93,7 +93,7 @@ const matchCommentsTop = (commentsData) => {
     const commentElement = document.querySelector(
       `#comments div[data-id="${item.id}"]`)
     commentElement.setAttribute('style', `top:${item.top}px`)
-    // 高度调整
+    // Height adjustment
     const previousElement = commentElement.previousElementSibling
     if (previousElement) {
       const previousTop = parseInt(previousElement.style.top) +
@@ -126,7 +126,7 @@ window.vditor = new Vditor('vditor', {
           cmtElement.setAttribute('data-id', id)
           cmtElement.innerHTML = `<div>
 ${text}<br>
-<button>删除</button><br>
+<button>Delete</button><br>
 <input>
 </div>`
           cmtElement.value = text

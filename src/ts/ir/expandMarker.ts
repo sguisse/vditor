@@ -51,7 +51,7 @@ export const expandMarker = (range: Range, vditor: IVditor) => {
 
     const nodeElement = hasTopClosestByClassName(range.startContainer, "vditor-ir__node");
     const nodeElementEnd = !range.collapsed && hasTopClosestByClassName(range.endContainer, "vditor-ir__node");
-    // 选中文本为同一个 nodeElement 内时，需要展开
+    // When selected text spans different nodeElements, do not expand
     if (!range.collapsed && (!nodeElement || nodeElement !== nodeElementEnd)) {
         return;
     }
@@ -59,7 +59,7 @@ export const expandMarker = (range: Range, vditor: IVditor) => {
     if (nodeElement) {
         nodeElement.classList.add("vditor-ir__node--expand");
         nodeElement.classList.remove("vditor-ir__node--hidden");
-        // https://github.com/Vanessa219/vditor/issues/615 safari中光标位置跳动
+        // https://github.com/Vanessa219/vditor/issues/615 cursor jumping issue in Safari
         setSelectionFocus(range);
     }
 

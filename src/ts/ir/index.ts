@@ -92,7 +92,7 @@ class IR {
 
         this.element.addEventListener("input", (event: InputEvent) => {
             if (event.inputType === "deleteByDrag" || event.inputType === "insertFromDrop") {
-                // https://github.com/Vanessa219/vditor/issues/801 编辑器内容拖拽问题
+                // https://github.com/Vanessa219/vditor/issues/801 Editor content drag/drop issue
                 return;
             }
             if (this.preventInput) {
@@ -124,7 +124,7 @@ class IR {
 
             const range = getEditorRange(vditor);
 
-            // 点击后光标落于预览区
+            // Move caret to preview area when clicking preview
             let previewElement = hasClosestByClassName(event.target, "vditor-ir__preview");
             if (!previewElement) {
                 previewElement = hasClosestByClassName(
@@ -134,7 +134,7 @@ class IR {
                 if (previewElement.previousElementSibling.firstElementChild) {
                     range.selectNodeContents(previewElement.previousElementSibling.firstElementChild);
                 } else {
-                    // 行内数学公式
+                    // Inline math expression
                     range.selectNodeContents(previewElement.previousElementSibling);
                 }
                 range.collapse(true);
@@ -142,7 +142,7 @@ class IR {
                 scrollCenter(vditor);
             }
 
-            // 点击图片光标选中图片地址
+            // Clicking image selects the image URL
             if (event.target.tagName === "IMG") {
                 const linkElement =
                     event.target.parentElement.querySelector<HTMLSpanElement>(".vditor-ir__marker--link");
@@ -151,7 +151,7 @@ class IR {
                     setSelectionFocus(range);
                 }
             }
-            // 打开链接
+            // Open link
             const aElement = hasClosestByAttribute(event.target, "data-type", "a");
             if (aElement && (!aElement.classList.contains("vditor-ir__node--expand"))) {
                 if (vditor.options.link.click) {
@@ -180,7 +180,7 @@ class IR {
             if (range.toString() === "") {
                 expandMarker(range, vditor);
             } else {
-                // https://github.com/Vanessa219/vditor/pull/681 当点击选中区域时 eventTarget 与 range 不一致，需延迟等待 range 发生变化
+                // https://github.com/Vanessa219/vditor/pull/681 When clicking a selected area, event.target and range may differ; delay to wait for range update
                 setTimeout(() => {
                     expandMarker(getEditorRange(vditor), vditor);
                 });
@@ -202,7 +202,7 @@ class IR {
                 vditor.ir.element.firstElementChild && vditor.ir.element.firstElementChild.tagName === "P"
                 && vditor.ir.element.firstElementChild.childElementCount === 0
                 && (vditor.ir.element.textContent === "" || vditor.ir.element.textContent === "\n")) {
-                // 为空时显示 placeholder
+                // Show placeholder when empty
                 vditor.ir.element.innerHTML = "";
                 return;
             }
@@ -213,7 +213,8 @@ class IR {
                     range.startContainer.textContent = "";
                     expandMarker(range, vditor);
                 }
-                // 数学公式前是空块，空块前是 table，在空块前删除，数学公式会多一个 br
+                // When inline math is preceded by an empty block which is before a table,
+                // deleting before the empty block may add an extra <br> inside the math render
                 this.element.querySelectorAll(".language-math").forEach((item) => {
                     const brElement = item.querySelector("br");
                     if (brElement) {
@@ -226,7 +227,7 @@ class IR {
                 }
                 expandMarker(range, vditor);
             } else if (event.keyCode === 229 && event.code === "" && event.key === "Unidentified") {
-                // https://github.com/Vanessa219/vditor/issues/508 IR 删除到节点需展开
+                // https://github.com/Vanessa219/vditor/issues/508 IR: deleting to a node should expand markers
                 expandMarker(range, vditor);
             }
 
@@ -237,7 +238,7 @@ class IR {
                     if (previewRenderElement.previousElementSibling.firstElementChild) {
                         range.selectNodeContents(previewRenderElement.previousElementSibling.firstElementChild);
                     } else {
-                        // 行内数学公式/html entity
+                        // Inline math expression or html entity
                         range.selectNodeContents(previewRenderElement.previousElementSibling);
                     }
                     range.collapse(false);

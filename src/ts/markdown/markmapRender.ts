@@ -37,7 +37,7 @@ export const markmapRender = (element: (HTMLElement | Document) = document, cdn 
     if (markmapElements.length === 0) {
         return;
     }
-    addScript(`${cdn}/dist/js/markmap/markmap.min.js`, "vditorMarkerScript").then(() => {
+    addScript(`js/markmap/markmap.min.js`, "vditorMarkerScript", cdn).then(() => {
         markmapElements.forEach((item) => {
             const code = markmapRenderAdapter.getCode(item);
             if (item.getAttribute("data-processed") === "true" || code.trim() === "") {

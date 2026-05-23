@@ -96,10 +96,10 @@ export class Preview {
                     actionHtml.push(`<button type="button" data-type="mobile">Mobile/Wechat</button>`);
                     break;
                 case "mp-wechat":
-                    actionHtml.push(`<button type="button" data-type="mp-wechat" class="vditor-tooltipped vditor-tooltipped__w" aria-label="复制到公众号"><svg><use xlink:href="#vditor-icon-mp-wechat"></use></svg></button>`);
+                    actionHtml.push(`<button type="button" data-type="mp-wechat" class="vditor-tooltipped vditor-tooltipped__w" aria-label="Copy to WeChat Public Account"><svg><use xlink:href="#vditor-icon-mp-wechat"></use></svg></button>`);
                     break;
                 case "zhihu":
-                    actionHtml.push(`<button type="button" data-type="zhihu" class="vditor-tooltipped vditor-tooltipped__w" aria-label="复制到知乎"><svg><use xlink:href="#vditor-icon-zhihu"></use></svg></button>`);
+                    actionHtml.push(`<button type="button" data-type="zhihu" class="vditor-tooltipped vditor-tooltipped__w" aria-label="Copy to Zhihu"><svg><use xlink:href="#vditor-icon-zhihu"></use></svg></button>`);
                     break;
             }
         }
@@ -269,9 +269,9 @@ export class Preview {
                 item.outerHTML = `<img class="Formula-image" data-eeimg="true" src="//www.zhihu.com/equation?tex=" alt="${item.getAttribute("data-math")}\\" style="display: block; margin: 0 auto; max-width: 100%;">`;
             });
         }
-        // 防止背景色被粘贴到公众号中
+        // Prevent background color from being pasted into public account platforms
         copyElement.style.backgroundColor = "#fff";
-        // 代码背景
+        // Code background
         copyElement.querySelectorAll("code").forEach((item) => {
             item.style.backgroundImage = "none";
         });
@@ -282,6 +282,6 @@ export class Preview {
         document.execCommand("copy");
         copyElement.remove();
 
-        vditor.tip.show(['zhihu', 'mp-wechat'].includes(type) ? `已复制，可到${type === "zhihu" ? "知乎" : "微信公众号平台"}进行粘贴` : `已复制到剪切板`);
+        vditor.tip.show(['zhihu', 'mp-wechat'].includes(type) ? `Copied. You can paste to ${type === "zhihu" ? "Zhihu" : "WeChat Public Platform"}.` : `Copied to clipboard.`);
     }
 }

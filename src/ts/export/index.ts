@@ -25,8 +25,8 @@ export const exportPDF = (vditor: IVditor) => {
     vditor.tip.show(window.VditorI18n.generate, 3800);
     const iframe = document.querySelector("#vditorExportIframe") as HTMLIFrameElement;
     iframe.contentDocument.open();
-    iframe.contentDocument.write(`<link rel="stylesheet" href="${vditor.options.cdn}/dist/index.css"/>
-<script src="${vditor.options.cdn}/dist/method.min.js"></script>
+    iframe.contentDocument.write(`<link rel="stylesheet" href="${vditor.options.cdn}/index.css"/>
+<script src="${vditor.options.cdn}/method.min.js"></script>
 <div id="preview" style="width: 800px"></div>
 <script>
 window.addEventListener("message", (e) => {
@@ -55,9 +55,9 @@ window.addEventListener("message", (e) => {
 
 export const exportHTML = (vditor: IVditor) => {
     const content = getHTML(vditor);
-    const html = `<html><head><link rel="stylesheet" type="text/css" href="${vditor.options.cdn}/dist/index.css"/>
-<script src="${vditor.options.cdn}/dist/js/i18n/${vditor.options.lang}.js"></script>
-<script src="${vditor.options.cdn}/dist/method.min.js"></script></head>
+    const html = `<html><head><link rel="stylesheet" type="text/css" href="${vditor.options.cdn}/index.css"/>
+<script src="${vditor.options.cdn}/js/i18n/${vditor.options.lang}.js"></script>
+<script src="${vditor.options.cdn}/method.min.js"></script></head>
 <body><div class="vditor-reset" id="preview">${content}</div>
 <script>
     const previewElement = document.getElementById('preview')
@@ -79,6 +79,6 @@ export const exportHTML = (vditor: IVditor) => {
     ${vditor.options.preview.render.media.enable ? 'Vditor.mediaRender(previewElement);' : ""}
     Vditor.speechRender(previewElement);
 </script>
-<script src="${vditor.options.cdn}/dist/js/icons/${vditor.options.icon}.js"></script></body></html>`;
+<script src="${vditor.options.cdn}/js/icons/${vditor.options.icon}.js"></script></body></html>`;
     download(vditor, html, content.substr(0, 10) + ".html");
 };

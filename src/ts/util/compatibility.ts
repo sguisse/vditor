@@ -14,7 +14,7 @@ export const accessLocalStorage = () => {
     }
 };
 
-// 用户 iPhone 点击延迟/需要双击的处理
+// Handle iPhone click delay / double-tap behavior
 export const getEventName = () => {
     if (navigator.userAgent.indexOf("iPhone") > -1) {
         return "touchstart";
@@ -23,7 +23,7 @@ export const getEventName = () => {
     }
 };
 
-// 区别 mac 上的 ctrl 和 meta
+// Differentiate ctrl and meta on macOS
 export const isCtrl = (event: KeyboardEvent) => {
     if (navigator.platform.toUpperCase().indexOf("MAC") >= 0) {
         // mac
@@ -38,11 +38,11 @@ export const isCtrl = (event: KeyboardEvent) => {
         return false;
     }
 };
-// Mac，Windows 快捷键展示
+// Display hotkey hints for Mac and Windows
 export const updateHotkeyTip = (hotkey: string) => {
     if (/Mac/.test(navigator.platform) || navigator.platform === "iPhone") {
         if (hotkey.indexOf("⇧") > -1 && isFirefox()) {
-            // Mac Firefox 按下 shift 后，key 同 windows 系统
+            // On Mac Firefox, pressing Shift makes the key behave like Windows
             hotkey = hotkey.replace(";", ":").replace("=", "+").replace("-", "_");
         }
     } else {

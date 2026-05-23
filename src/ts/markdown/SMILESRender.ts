@@ -12,7 +12,7 @@ declare class SmiDrawer {
 export const SMILESRender = (element: (HTMLElement | Document) = document, cdn = Constants.CDN, theme: string) => {
     const SMILESElements = SMILESRenderAdapter.getElements(element);
     if (SMILESElements.length > 0) {
-        addScript(`${cdn}/dist/js/smiles-drawer/smiles-drawer.min.js?v=2.1.7`, "vditorAbcjsScript").then(() => {
+        addScript(`js/smiles-drawer/smiles-drawer.min.js?v=2.1.7`, "vditorAbcjsScript", cdn).then(() => {
             let sd = new SmiDrawer({}, {});
             SMILESElements.forEach((item: HTMLDivElement) => {
                 const code = SMILESRenderAdapter.getCode(item).trim();

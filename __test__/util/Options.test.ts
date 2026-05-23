@@ -130,7 +130,7 @@ describe("Options", () => {
                 emoji: {
                     "+1": "👍",
                 },
-                emojiTail: "前往设置",
+                emojiTail: "Go to settings",
             },
         });
         expect(options.merge()).toMatchObject({
@@ -141,7 +141,7 @@ describe("Options", () => {
                     "+1": "👍",
                 },
                 emojiPath: "https://unpkg.com/vditor@version/dist/images/emoji",
-                emojiTail: "前往设置",
+                emojiTail: "Go to settings",
             },
         });
     });

@@ -26,13 +26,14 @@ const mergeOptions = (options?: IPreviewOptions) => {
         anchor: 0,
         cdn: Constants.CDN,
         customEmoji: {},
-        emojiPath: `${Constants.CDN}/dist/images/emoji`,
+        emojiPath: `${Constants.CDN}/images/emoji`,
         hljs: Constants.HLJS_OPTIONS,
         icon: "ant",
         lang: "zh_CN",
         markdown: Constants.MARKDOWN_OPTIONS,
         math: Constants.MATH_OPTIONS,
         mode: "light",
+        renderersCDN: {},
         speech: {
             enable: false,
         },
@@ -45,10 +46,10 @@ const mergeOptions = (options?: IPreviewOptions) => {
     };
     if (options.cdn) {
         if (!options.theme?.path) {
-            defaultOption.theme.path = `${options.cdn}/dist/css/content-theme`
+            defaultOption.theme.path = `${options.cdn}/css/content-theme`
         }
         if (!options.emojiPath) {
-            defaultOption.emojiPath = `${options.cdn}/dist/images/emoji`;
+            defaultOption.emojiPath = `${options.cdn}/images/emoji`;
         }
     }
     return merge(defaultOption, options);
@@ -56,7 +57,7 @@ const mergeOptions = (options?: IPreviewOptions) => {
 
 export const md2html = (mdText: string, options?: IPreviewOptions) => {
     const mergedOptions = mergeOptions(options);
-    return addScript(`${mergedOptions.cdn}/dist/js/lute/lute.min.js`, "vditorLuteScript").then(() => {
+    return addScript(`js/lute/lute.min.js`, "vditorLuteScript", mergedOptions.cdn).then(() => {
         const lute = setLute({
             autoSpace: mergedOptions.markdown.autoSpace,
             gfmAutoLink: mergedOptions.markdown.gfmAutoLink,
@@ -113,14 +114,14 @@ export const previewRender = async (previewElement: HTMLDivElement, markdown: st
                     document.head.removeChild(el);
                 }
             });
-            await addScript(`${mergedOptions.cdn}/dist/js/i18n/${mergedOptions.lang}.js`, i18nScriptID);
+            await addScript(`js/i18n/${mergedOptions.lang}.js`, i18nScriptID, mergedOptions.cdn);
         }
     } else {
         window.VditorI18n = mergedOptions.i18n;
     }
 
     if (mergedOptions.icon) {
-        await addScript(`${mergedOptions.cdn}/dist/js/icons/${mergedOptions.icon}.js`, "vditorIconScript");
+        await addScript(`js/icons/${mergedOptions.icon}.js`, "vditorIconScript", mergedOptions.cdn);
     }
 
     setContentTheme(mergedOptions.theme.current, mergedOptions.theme.path);
@@ -128,20 +129,20 @@ export const previewRender = async (previewElement: HTMLDivElement, markdown: st
         previewElement.classList.add("vditor-reset--anchor");
     }
     codeRender(previewElement, mergedOptions.hljs);
-    highlightRender(mergedOptions.hljs, previewElement, mergedOptions.cdn);
+    highlightRender(mergedOptions.hljs, previewElement, mergedOptions.renderersCDN?.highlight?.cdn || mergedOptions.cdn);
     mathRender(previewElement, {
-        cdn: mergedOptions.cdn,
+        cdn: mergedOptions.renderersCDN?.math?.cdn || mergedOptions.cdn,
         math: mergedOptions.math,
     });
-    mermaidRender(previewElement, mergedOptions.cdn, mergedOptions.mode);
-    SMILESRender(previewElement, mergedOptions.cdn, mergedOptions.mode);
-    markmapRender(previewElement, mergedOptions.cdn);
-    flowchartRender(previewElement, mergedOptions.cdn);
-    graphvizRender(previewElement, mergedOptions.cdn);
-    chartRender(previewElement, mergedOptions.cdn, mergedOptions.mode);
-    mindmapRender(previewElement, mergedOptions.cdn, mergedOptions.mode);
-    plantumlRender(previewElement, mergedOptions.cdn);
-    abcRender(previewElement, mergedOptions.cdn);
+    mermaidRender(previewElement, mergedOptions.renderersCDN?.mermaid?.cdn || mergedOptions.cdn, mergedOptions.mode);
+    SMILESRender(previewElement, mergedOptions.renderersCDN?.smiles?.cdn || mergedOptions.cdn, mergedOptions.mode);
+    markmapRender(previewElement, mergedOptions.renderersCDN?.markmap?.cdn || mergedOptions.cdn);
+    flowchartRender(previewElement, mergedOptions.renderersCDN?.flowchart?.cdn || mergedOptions.cdn);
+    graphvizRender(previewElement, mergedOptions.renderersCDN?.graphviz?.cdn || mergedOptions.cdn);
+    chartRender(previewElement, mergedOptions.renderersCDN?.chart?.cdn || mergedOptions.cdn, mergedOptions.mode);
+    mindmapRender(previewElement, mergedOptions.renderersCDN?.mindmap?.cdn || mergedOptions.cdn, mergedOptions.mode);
+    plantumlRender(previewElement, mergedOptions.renderersCDN?.plantuml?.cdn || mergedOptions.cdn);
+    abcRender(previewElement, mergedOptions.renderersCDN?.abc?.cdn || mergedOptions.cdn);
     if (mergedOptions.render.media.enable) {
         mediaRender(previewElement);
     }

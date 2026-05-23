@@ -36,7 +36,7 @@ window.VditorI18n = {
   'heading4': 'Heading 4',
   'heading5': 'Heading 5',
   'heading6': 'Heading 6',
-  'help': 'Help',
+  'help': 'Help SGU',
   'imageURL': 'image URL',
   'indent': 'Indent',
   'info': 'Info',

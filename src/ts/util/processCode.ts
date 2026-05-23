@@ -33,7 +33,7 @@ export const processPasteCode = (html: string, text: string, type = "sv") => {
     }
     if (tempElement.childElementCount === 1 && tempElement.firstElementChild.tagName === "TABLE" &&
         tempElement.querySelector(".line-number") && tempElement.querySelector(".line-content")) {
-        // 网页源码
+        // Web page source code
         isCode = true;
     }
 

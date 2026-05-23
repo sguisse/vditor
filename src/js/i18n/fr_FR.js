@@ -36,7 +36,7 @@ window.VditorI18n = {
   'heading4': 'Titre 4',
   'heading5': 'Titre 5',
   'heading6': 'Titre 6',
-  'help': 'Aide',
+  'help': 'Aide SGU',
   'imageURL': 'URL de l\'image',
   'indent': 'Augmenter le retrait',
   'info': 'Info',

@@ -16,7 +16,7 @@ export const processKeydown = (vditor: IVditor, event: KeyboardEvent) => {
         event.key !== "Shift" && event.key !== "CapsLock" && event.key !== "Escape" && !/^F\d{1,2}$/.test(event.key)) {
         vditor.undo.recordFirstPosition(vditor, event);
     }
-    // 仅处理以下快捷键操作
+    // Only handle the following shortcut keys
     if (event.key !== "Enter" && event.key !== "Tab" && event.key !== "Backspace" && event.key.indexOf("Arrow") === -1
         && !isCtrl(event) && event.key !== "Escape") {
         return false;
@@ -34,14 +34,14 @@ export const processKeydown = (vditor: IVditor, event: KeyboardEvent) => {
         textElement.previousElementSibling.getAttribute("data-type") === "blockquote-marker") {
         blockquoteMarkerElement = textElement.previousElementSibling as HTMLElement;
     }
-    // 回车逐个删除 blockquote marker 标记
+    // Press Enter to remove blockquote markers one by one
     if (blockquoteMarkerElement) {
         if (event.key === "Enter" && !isCtrl(event) && !event.altKey &&
             blockquoteMarkerElement.nextElementSibling.textContent.trim() === "" &&
             getSelectPosition(blockquoteMarkerElement, vditor.sv.element, range).start ===
             blockquoteMarkerElement.textContent.length) {
             if (blockquoteMarkerElement.previousElementSibling?.getAttribute("data-type") === "padding") {
-                // 列表中存在多行 BQ 时，标记回车需跳出列表
+                // When a list contains multiple blockquotes, pressing Enter on the marker should exit the list
                 blockquoteMarkerElement.previousElementSibling.setAttribute("data-action", "enter-remove");
             }
             blockquoteMarkerElement.remove();
@@ -74,7 +74,7 @@ export const processKeydown = (vditor: IVditor, event: KeyboardEvent) => {
                 .previousElementSibling as HTMLElement;
         }
         if (startIndex === listLastMarkerElement.textContent.length) {
-            // 回车清空列表标记符
+            // Press Enter to clear the list marker
             if (event.key === "Enter" && !isCtrl(event) && !event.altKey && !event.shiftKey &&
                 listLastMarkerElement.nextElementSibling.textContent.trim() === "") {
                 if (listFirstMarkerElement.previousElementSibling?.getAttribute("data-type") === "padding") {
@@ -93,7 +93,7 @@ export const processKeydown = (vditor: IVditor, event: KeyboardEvent) => {
                 event.preventDefault();
                 return true;
             }
-            // 第一个 marker 后 tab 进行缩进
+            // Tab after the first marker indents the list
             if (event.key === "Tab") {
                 if (event.shiftKey) {
                     if (listFirstMarkerElement.previousElementSibling.getAttribute("data-type") === "padding") {
@@ -122,12 +122,12 @@ export const processKeydown = (vditor: IVditor, event: KeyboardEvent) => {
 
     const blockElement = hasClosestByAttribute(startContainer, "data-block", "0");
     const spanElement = hasClosestByTag(startContainer, "SPAN");
-    // 回车
+    // Enter key
     if (event.key === "Enter" && !isCtrl(event) && !event.altKey && !event.shiftKey && blockElement) {
         let isFirst = false;
         const newLineMatch = blockElement.textContent.match(/^\n+/);
         if (getSelectPosition(blockElement, vditor.sv.element).start <= (newLineMatch ? newLineMatch[0].length : 0)) {
-            // 允许段落开始换行
+            // Allow newline at the start of a paragraph
             isFirst = true;
         }
         let newLineText = "\n";
@@ -153,13 +153,13 @@ export const processKeydown = (vditor: IVditor, event: KeyboardEvent) => {
         return true;
     }
 
-    // 删除后光标前有 newline 的处理
+    // Handle deletion when a newline is immediately before the caret
     if (event.key === "Backspace" && !isCtrl(event) && !event.altKey && !event.shiftKey) {
         if (spanElement && spanElement.previousElementSibling?.getAttribute("data-type") === "newline" &&
             getSelectPosition(spanElement, vditor.sv.element, range).start === 1 &&
-            // 飘号的处理需在 inputEvent 中，否则上下飘号对不齐
+            // Floating marker handling must be done in inputEvent to keep alignment
             spanElement.getAttribute("data-type").indexOf("code-block-") === -1) {
-            // 光标在每一行的第一个字符后
+            // Cursor is after the first character of the line
             range.setStart(spanElement, 0);
             range.extractContents();
             if (spanElement.textContent.trim() !== "") {
@@ -170,7 +170,7 @@ export const processKeydown = (vditor: IVditor, event: KeyboardEvent) => {
             event.preventDefault();
             return true;
         }
-        // 每一段第一个字符前
+        // Before the first character of the paragraph
         if (blockElement && getSelectPosition(blockElement, vditor.sv.element, range).start === 0 &&
             blockElement.previousElementSibling) {
             range.extractContents();
@@ -179,7 +179,7 @@ export const processKeydown = (vditor: IVditor, event: KeyboardEvent) => {
                 previousLastElement.remove();
                 previousLastElement = blockElement.previousElementSibling.lastElementChild;
             }
-            // 场景：末尾无法删除 [```\ntext\n```\n\n]
+            // Scenario: cannot delete at the end of a fenced code block
             if (previousLastElement.getAttribute("data-type") !== "newline") {
                 previousLastElement.insertAdjacentHTML("afterend", blockElement.innerHTML);
                 blockElement.remove();

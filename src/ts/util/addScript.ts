@@ -1,9 +1,15 @@
-export const addScriptSync = (path: string, id: string) => {
+import {Constants} from "../constants";
+
+export const addScriptSync = (path: string, id: string, basePath = Constants.CDN) => {
     if (document.getElementById(id)) {
         return false;
     }
+    let url = path;
+    if (!/^(https?:)?\/\//.test(path)) {
+        url = (basePath ? `${basePath}/${path}` : path).replace(/\/+/g, "/");
+    }
     const xhrObj = new XMLHttpRequest();
-    xhrObj.open("GET", path, false);
+    xhrObj.open("GET", url, false);
     xhrObj.setRequestHeader("Accept",
         "text/javascript, application/javascript, application/ecmascript, application/x-ecmascript, */*; q=0.01");
     xhrObj.send("");
@@ -14,24 +20,28 @@ export const addScriptSync = (path: string, id: string) => {
     document.head.appendChild(scriptElement);
 };
 
-export const addScript = (path: string, id: string) => {
+export const addScript = (path: string, id: string, basePath = Constants.CDN) => {
     return new Promise((resolve, reject) => {
         if (document.getElementById(id)) {
-            // 脚本加载后再次调用直接返回
+            // If the script is already loaded, return immediately
             resolve(true);
             return false;
         }
+        let url = path;
+        if (!/^(https?:)?\/\//.test(path)) {
+            url = (basePath ? `${basePath}/${path}` : path).replace(/\/+/g, "/");
+        }
         const scriptElement = document.createElement("script");
-        scriptElement.src = path;
+        scriptElement.src = url;
         scriptElement.async = true;
-        // 循环调用时 Chrome 不会重复请求 js
+        // When called repeatedly, Chrome won't re-request the same JS
         document.head.appendChild(scriptElement);
         scriptElement.onerror = (event) => {
             reject(event);
-        }
+        };
         scriptElement.onload = () => {
             if (document.getElementById(id)) {
-                // 循环调用需清除 DOM 中的 script 标签
+                // For repeated calls, remove the temporary script tag from the DOM
                 scriptElement.remove();
                 resolve(true);
                 return false;

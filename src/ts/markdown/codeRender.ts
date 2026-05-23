@@ -19,7 +19,7 @@ export const codeRender = (element: HTMLElement, option?: IHljs) => {
             return false;
         }
 
-        // 避免预览区在渲染后由于代码块过多产生性能问题 https://github.com/b3log/vditor/issues/67
+        // Avoid performance issues in the preview caused by too many code blocks after rendering https://github.com/b3log/vditor/issues/67
         if (element.classList.contains("vditor-preview") && index > 5) {
             return false;
         }
@@ -42,10 +42,10 @@ export const codeRender = (element: HTMLElement, option?: IHljs) => {
 
         const divElement = document.createElement("div");
         divElement.className = "vditor-copy";
-        divElement.innerHTML = `<span aria-label="${window.VditorI18n?.copy || "复制"}"
-onmouseover="this.setAttribute('aria-label', '${window.VditorI18n?.copy || "复制"}')"
-class="vditor-tooltipped vditor-tooltipped__w"
-onclick="event.stopPropagation();this.previousElementSibling.select();document.execCommand('copy');this.setAttribute('aria-label', '${window.VditorI18n?.copied || "已复制"}');this.previousElementSibling.blur()">${iconHTML}</span>`;
+        divElement.innerHTML = `<span aria-label="${window.VditorI18n?.copy || "Copy"}"
+    onmouseover="this.setAttribute('aria-label', '${window.VditorI18n?.copy || "Copy"}')"
+    class="vditor-tooltipped vditor-tooltipped__w"
+    onclick="event.stopPropagation();this.previousElementSibling.select();document.execCommand('copy');this.setAttribute('aria-label', '${window.VditorI18n?.copied || "Copied"}');this.previousElementSibling.blur()">${iconHTML}</span>`;
         const textarea = document.createElement("textarea");
         textarea.value = code160to32(codeText);
         divElement.insertAdjacentElement("afterbegin", textarea);

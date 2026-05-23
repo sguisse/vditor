@@ -10,7 +10,7 @@ declare const echarts: {
 export const chartRender = (element: (HTMLElement | Document) = document, cdn = Constants.CDN, theme: string) => {
     const echartsElements = chartRenderAdapter.getElements(element);
     if (echartsElements.length > 0) {
-        addScript(`${cdn}/dist/js/echarts/echarts.min.js?v=5.5.1`, "vditorEchartsScript").then(() => {
+        addScript(`js/echarts/echarts.min.js?v=5.5.1`, "vditorEchartsScript", cdn).then(() => {
             echartsElements.forEach(async (e: HTMLDivElement) => {
                 if (e.parentElement.classList.contains("vditor-wysiwyg__pre") ||
                     e.parentElement.classList.contains("vditor-ir__marker--pre")) {

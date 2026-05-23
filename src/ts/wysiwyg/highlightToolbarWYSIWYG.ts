@@ -70,7 +70,7 @@ export const highlightToolbarWYSIWYG = (vditor: IVditor) => {
             return;
         }
 
-        // 工具栏高亮和禁用
+        // Toolbar highlighting and enabling/disabling
         const liElement = hasClosestByMatchTag(typeElement, "LI");
         if (liElement) {
             if (liElement.classList.contains("vditor-task")) {
@@ -651,9 +651,9 @@ export const highlightToolbarWYSIWYG = (vditor: IVditor) => {
                         processCodeRender(blockRenderElement.lastElementChild as HTMLElement, vditor);
                     }
                     afterRenderEvent(vditor);
-                    // 当鼠标点选语言时，触发自定义input事件
+                    // When a language is clicked, trigger the custom input event
                     if (e.detail === 1) {
-                        // 选择语言后，输入焦点切换到代码输入框
+                        // After selecting a language, move input focus to the code input
                         range.setStart(codeElement.firstChild, 0);
                         range.collapse(true);
                         setSelectionFocus(range);
@@ -779,7 +779,7 @@ export const highlightToolbarWYSIWYG = (vditor: IVditor) => {
             }
         }
 
-        // 反斜杠特殊处理
+        // Special handling for backslash
         vditor.wysiwyg.element
             .querySelectorAll('span[data-type="backslash"] > span')
             .forEach((item: HTMLElement) => {
@@ -975,7 +975,7 @@ const linkHotkey = (
         event.key === "Enter"
     ) {
         const range = getEditorRange(vditor);
-        // firefox 不会打断 link https://github.com/Vanessa219/vditor/issues/193
+        // Firefox doesn't break link https://github.com/Vanessa219/vditor/issues/193
         element.insertAdjacentHTML("afterend", Constants.ZWSP);
         range.setStartAfter(element.nextSibling);
         range.collapse(true);

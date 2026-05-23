@@ -43,12 +43,13 @@ export abstract class Constants {
         "lightfair", "magula", "mono-blue", "nnfx-light", "panda-syntax-light", "paraiso-light", "purebasic", "qtcreator-light", "routeros", "school-book",
         "stackoverflow-light", "tokyo-night-light", "vs", "xcode", "default"];
     public static readonly ALIAS_CODE_LANGUAGES: string[] = [
-        // 自定义
+        // Custom
         "abc", "plantuml", "mermaid", "flowchart", "echarts", "mindmap", "graphviz", "math", "markmap", "smiles",
-        // 别名
+        // Aliases
         "js", "ts", "html", "toml", "c#", "bat"
     ];
-    public static readonly CDN = `https://unpkg.com/vditor@${VDITOR_VERSION}`;
+    //public static readonly CDN = `https://unpkg.com/vditor@${VDITOR_VERSION}`;
+    public static readonly CDN = "";
     public static readonly MARKDOWN_OPTIONS = {
         autoSpace: false,
         gfmAutoLink: true,
@@ -85,6 +86,6 @@ export abstract class Constants {
             "light": "Light",
             "wechat": "WeChat",
         },
-        path: `${Constants.CDN}/dist/css/content-theme`,
+        path: `${Constants.CDN}/css/content-theme`,
     };
 }

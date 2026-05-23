@@ -7,7 +7,7 @@ export const SMILESRenderAdapter = {
     getElements: (element: HTMLElement| Document) => element.querySelectorAll(".language-smiles"),
 };
 export const mermaidRenderAdapter = {
-    /** 不仅要返回code，并且需要将 code 设置为 el 的 innerHTML */
+    /** Not only return the code, but also set the code into el.innerHTML */
     getCode: (el: Element) => el.textContent,
     getElements: (element: HTMLElement| Document) => element.querySelectorAll(".language-mermaid"),
 };

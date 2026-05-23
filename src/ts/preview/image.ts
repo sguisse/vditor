@@ -17,7 +17,7 @@ export const previewImage = (oldImgElement: HTMLImageElement, lang: keyof II18n 
 </div>`);
     document.body.style.overflow = "hidden";
 
-    // 图片从原始位置移动到预览正中间的动画效果
+    // Animation to move the image from its original position to the center of the preview
     const imgElement = document.querySelector(".vditor-img img") as HTMLImageElement;
     const translate3d = `translate3d(${Math.max(0, window.innerWidth - oldImgElement.naturalWidth) / 2}px, ${Math.max(0, window.innerHeight - height - oldImgElement.naturalHeight) / 2}px, 0)`;
     setTimeout(() => {
@@ -29,7 +29,7 @@ export const previewImage = (oldImgElement: HTMLImageElement, lang: keyof II18n 
         }, 400);
     });
 
-    // 旋转
+    // Rotate image
     const btnElement = document.querySelector(".vditor-img__btn");
     btnElement.addEventListener("click", () => {
         const deg = parseInt(btnElement.getAttribute("data-deg"), 10) + 90;

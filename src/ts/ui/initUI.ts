@@ -8,7 +8,7 @@ import {setTheme} from "./setTheme";
 export const initUI = (vditor: IVditor) => {
   vditor.element.innerHTML = "";
   vditor.element.classList.add("vditor");
-  // 支持 RTL
+  // Support RTL (right-to-left)
   if (vditor.options.rtl) {
     vditor.element.setAttribute("dir", "rtl")
   }
@@ -146,7 +146,7 @@ export const setTypewriterPosition = (vditor: IVditor) => {
   if (vditor.element.classList.contains("vditor--fullscreen")) {
     height = window.innerHeight;
   }
-  // 由于 Firefox padding-bottom bug，只能使用 :after
+  // Due to Firefox padding-bottom bug, must use :after
   vditor[vditor.currentMode].element.style.setProperty("--editor-bottom",
     ((height - vditor.toolbar.element.offsetHeight) / 2) + "px");
 };

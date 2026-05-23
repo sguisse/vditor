@@ -27,11 +27,11 @@ import {
     setSelectionByPosition, setSelectionFocus,
 } from "./selection";
 
-// https://github.com/Vanessa219/vditor/issues/508 软键盘无法删除空块
+// https://github.com/Vanessa219/vditor/issues/508 Soft keyboard cannot delete empty blocks
 export const fixGSKeyBackspace = (event: KeyboardEvent, vditor: IVditor, startContainer: Node) => {
     if (event.keyCode === 229 && event.code === "" && event.key === "Unidentified" && vditor.currentMode !== "sv") {
         const blockElement = hasClosestBlock(startContainer);
-        // 移动端的标点符号都显示为 299，因此需限定为空删除的条件
+        // On mobile punctuation keys report keyCode 299, so require truly empty blocks for deletion
         if (blockElement && blockElement.textContent.trim() === "") {
             vditor[vditor.currentMode].composingLock = true;
             return false;
@@ -40,7 +40,7 @@ export const fixGSKeyBackspace = (event: KeyboardEvent, vditor: IVditor, startCo
     return true;
 };
 
-// https://github.com/Vanessa219/vditor/issues/361 代码块后输入中文
+// https://github.com/Vanessa219/vditor/issues/361 Chinese input after code block
 export const fixCJKPosition = (range: Range, vditor: IVditor, event: KeyboardEvent) => {
     if (event.key === "Enter" || event.key === "Tab" || event.key === "Backspace" || event.key.indexOf("Arrow") > -1
         || isCtrl(event) || event.key === "Escape" || event.shiftKey || event.altKey) {
@@ -50,7 +50,7 @@ export const fixCJKPosition = (range: Range, vditor: IVditor, event: KeyboardEve
         hasClosestByMatchTag(range.startContainer, "LI");
     if (pLiElement && getSelectPosition(pLiElement, vditor[vditor.currentMode].element, range).start === 0) {
 
-        // https://github.com/Vanessa219/vditor/issues/1289 WKWebView切换输入法产生六分之一空格，造成光标错位
+        // https://github.com/Vanessa219/vditor/issues/1289 WKWebView IME switch inserts U+2006 (six-per-em space), causing caret misalignment
         if (pLiElement.nodeValue) {
             pLiElement.nodeValue = pLiElement.nodeValue.replace(/\u2006/g, "");
         }
@@ -61,7 +61,7 @@ export const fixCJKPosition = (range: Range, vditor: IVditor, event: KeyboardEve
     }
 };
 
-// https://github.com/Vanessa219/vditor/issues/381 光标在内联数学公式中无法向下移动
+// https://github.com/Vanessa219/vditor/issues/381 Caret cannot move down inside inline math/html entities
 export const fixCursorDownInlineMath = (range: Range, key: string) => {
     if (key === "ArrowDown" || key === "ArrowUp") {
         const inlineElement = hasClosestByAttribute(range.startContainer, "data-type", "math-inline") ||
@@ -105,7 +105,7 @@ export const isLastCell = (cellElement: HTMLElement) => {
     return false;
 };
 
-// 光标设置到前一个表格中
+// Move caret to the previous table cell
 const goPreviousCell = (cellElement: HTMLElement, range: Range, isSelected = true) => {
     let previousElement = cellElement.previousElementSibling;
     if (!previousElement) {
@@ -183,7 +183,7 @@ export const listToggle = (vditor: IVditor, range: Range, type: string, cancel =
     range.insertNode(document.createElement("wbr"));
 
     if (cancel && itemElement) {
-        // 取消
+        // cancel
         let pHTML = "";
         for (let i = 0; i < itemElement.parentElement.childElementCount; i++) {
             const inputElement = itemElement.parentElement.children[i].querySelector("input");
@@ -194,9 +194,9 @@ export const listToggle = (vditor: IVditor, range: Range, type: string, cancel =
         }
         itemElement.parentElement.insertAdjacentHTML("beforebegin", pHTML);
         itemElement.parentElement.remove();
-    } else {
-        if (!itemElement) {
-            // 添加
+        } else {
+            if (!itemElement) {
+                // add
             let blockElement = hasClosestByAttribute(range.startContainer, "data-block", "0");
             if (!blockElement) {
                 vditor[vditor.currentMode].element.querySelector("wbr").remove();
@@ -217,7 +217,7 @@ export const listToggle = (vditor: IVditor, range: Range, type: string, cancel =
                 blockElement.remove();
             }
         } else {
-            // 切换
+            // toggle
             if (type === "check") {
                 itemElement.parentElement.querySelectorAll("li").forEach((item) => {
                     item.insertAdjacentHTML("afterbegin",
@@ -405,11 +405,11 @@ export const isHrMD = (text: string) => {
         if (marker.replace(/ /g, "").length > 2) {
             if (marker.indexOf("-") > -1 && marker.trimLeft().indexOf(" ") === -1
                 && text.trimRight().split("\n").length > 1) {
-                // 满足 heading
+                // matches a heading
                 return false;
             }
             if (marker.indexOf("    ") === 0 || marker.indexOf("\t") === 0) {
-                // 代码块
+                // code block
                 return false;
             }
             return true;
@@ -458,10 +458,10 @@ export const fixList = (range: Range, vditor: IVditor, pElement: HTMLElement | f
     const liElement = hasClosestByMatchTag(startContainer, "LI");
     if (liElement) {
         if (!isCtrl(event) && !event.altKey && event.key === "Enter" &&
-            // fix li 中有多个 P 时，在第一个 P 中换行会在下方生成新的 li
+            // When an li contains multiple <p>, pressing Enter in the first <p> may create a new li below
             (!event.shiftKey && pElement && liElement.contains(pElement) && pElement.nextElementSibling)) {
             if (liElement && !liElement.textContent.endsWith("\n")) {
-                // li 结尾需 \n
+                // li must end with \n
                 liElement.insertAdjacentText("beforeend", "\n");
             }
             range.insertNode(document.createTextNode("\n\n"));
@@ -474,7 +474,7 @@ export const fixList = (range: Range, vditor: IVditor, pElement: HTMLElement | f
         if (!isCtrl(event) && !event.shiftKey && !event.altKey && event.key === "Backspace" &&
             !liElement.previousElementSibling && range.toString() === "" &&
             getSelectPosition(liElement, vditor[vditor.currentMode].element, range).start === 0) {
-            // 光标位于点和第一个字符中间时，无法删除 li 元素
+            // Cannot delete li when caret is between the list marker and the first character
             if (liElement.nextElementSibling) {
                 liElement.parentElement.insertAdjacentHTML("beforebegin",
                     `<p data-block="0"><wbr>${liElement.innerHTML}</p>`);
@@ -488,7 +488,7 @@ export const fixList = (range: Range, vditor: IVditor, pElement: HTMLElement | f
             return true;
         }
 
-        // 空列表删除后与上一级段落对齐
+        // Align with the previous paragraph after removing an empty list
         if (!isCtrl(event) && !event.shiftKey && !event.altKey && event.key === "Backspace" &&
             liElement.textContent.trim().replace(Constants.ZWSP, "") === "" &&
             range.toString() === "" && liElement.previousElementSibling?.tagName === "LI") {
@@ -503,17 +503,17 @@ export const fixList = (range: Range, vditor: IVditor, pElement: HTMLElement | f
         }
 
         if (!isCtrl(event) && !event.altKey && event.key === "Tab") {
-            // 光标位于第一/零字符时，tab 用于列表的缩进
+            // When caret is at the first/zero character, Tab is used to indent list items
             let isFirst = false;
             if (range.startOffset === 0
                 && ((startContainer.nodeType === 3 && !startContainer.previousSibling)
                     || (startContainer.nodeType !== 3 && startContainer.nodeName === "LI"))) {
-                // 有序/无序列表
+                // ordered/unordered list
                 isFirst = true;
             } else if (liElement.classList.contains("vditor-task") && range.startOffset === 1
                 && startContainer.previousSibling.nodeType !== 3
                 && (startContainer.previousSibling as HTMLElement).tagName === "INPUT") {
-                // 任务列表
+                // task list
                 isFirst = true;
             }
 
@@ -531,7 +531,7 @@ export const fixList = (range: Range, vditor: IVditor, pElement: HTMLElement | f
     return false;
 };
 
-// tab 处理: block code render, table, 列表第一个字符中的 tab 处理单独写在上面
+// Tab handling: block code render, table. Tab handling for the first character in a list is implemented above
 export const fixTab = (vditor: IVditor, range: Range, event: KeyboardEvent) => {
     if (vditor.options.tab && event.key === "Tab") {
         if (event.shiftKey) {
@@ -561,7 +561,7 @@ export const fixMarkdown = (event: KeyboardEvent, vditor: IVditor, pElement: HTM
         const pText = String.raw`${pElement.textContent}`.replace(/\\\|/g, "").trim();
         const pTextList = pText.split("|");
         if (pText.startsWith("|") && pText.endsWith("|") && pTextList.length > 3) {
-            // table 自动完成
+            // Table auto-complete
             let tableHeaderMD = pTextList.map(() => "---").join("|");
             tableHeaderMD =
                 pElement.textContent + "\n" + tableHeaderMD.substring(3, tableHeaderMD.length - 3) + "\n|<wbr>";
@@ -573,9 +573,9 @@ export const fixMarkdown = (event: KeyboardEvent, vditor: IVditor, pElement: HTM
             return true;
         }
 
-        // hr 渲染
+        // HR rendering
         if (isHrMD(pElement.innerHTML) && pElement.previousElementSibling) {
-            // 软换行后 hr 前有内容
+            // If there are soft line-breaks, there may be content before the HR
             let pInnerHTML = "";
             const innerHTMLList = pElement.innerHTML.trimRight().split("\n");
             if (innerHTMLList.length > 1) {
@@ -594,7 +594,7 @@ export const fixMarkdown = (event: KeyboardEvent, vditor: IVditor, pElement: HTM
         }
 
         if (isHeadingMD(pElement.innerHTML)) {
-            // heading 渲染
+            // Heading rendering
             if (vditor.currentMode === "wysiwyg") {
                 pElement.outerHTML = vditor.lute.SpinVditorDOM(pElement.innerHTML + '<p data-block="0"><wbr>\n</p>');
             } else {
@@ -608,7 +608,7 @@ export const fixMarkdown = (event: KeyboardEvent, vditor: IVditor, pElement: HTM
         }
     }
 
-    // 软换行会被切割 https://github.com/Vanessa219/vditor/issues/220
+    // Soft line-breaks may be split https://github.com/Vanessa219/vditor/issues/220
     if (range.collapsed && pElement.previousElementSibling && event.key === "Backspace" &&
         !isCtrl(event) && !event.altKey && !event.shiftKey &&
         pElement.textContent.trimRight().split("\n").length > 1 &&
@@ -731,7 +731,7 @@ export const fixTable = (vditor: IVditor, event: KeyboardEvent, range: Range) =>
     const cellElement = hasClosestByMatchTag(startContainer, "TD") ||
         hasClosestByMatchTag(startContainer, "TH");
     if (cellElement) {
-        // 换行或软换行：在 cell 中添加 br
+        // Enter or soft line-break: add <br> inside the cell
         if (!isCtrl(event) && !event.altKey && event.key === "Enter") {
             if (!cellElement.lastElementChild ||
                 (cellElement.lastElementChild && (!cellElement.lastElementChild.isSameNode(cellElement.lastChild) ||
@@ -747,10 +747,10 @@ export const fixTable = (vditor: IVditor, event: KeyboardEvent, range: Range) =>
             return true;
         }
 
-        // tab：光标移向下一个 cell
+        // Tab: move caret to the next cell
         if (event.key === "Tab") {
             if (event.shiftKey) {
-                // shift + tab 光标移动到前一个 cell
+                // Shift+Tab: move caret to the previous cell
                 goPreviousCell(cellElement, range);
                 event.preventDefault();
                 return true;
@@ -849,7 +849,7 @@ export const fixTable = (vditor: IVditor, event: KeyboardEvent, range: Range) =>
             return true;
         }
 
-        // Backspace：光标移动到前一个 cell
+        // Backspace: move caret to the previous cell
         if (!isCtrl(event) && !event.shiftKey && !event.altKey && event.key === "Backspace"
             && range.startOffset === 0 && range.toString() === "") {
             const previousCellElement = goPreviousCell(cellElement, range, false);
@@ -866,49 +866,49 @@ export const fixTable = (vditor: IVditor, event: KeyboardEvent, range: Range) =>
             event.preventDefault();
             return true;
         }
-        // 上方新添加一行
+        // Insert a new row above
         if (matchHotKey("⇧⌘F", event)) {
             insertRowAbove(vditor, range, cellElement);
             event.preventDefault();
             return true;
         }
 
-        // 下方新添加一行 https://github.com/Vanessa219/vditor/issues/46
+        // Insert a new row below https://github.com/Vanessa219/vditor/issues/46
         if (matchHotKey("⌘=", event)) {
             insertRow(vditor, range, cellElement);
             event.preventDefault();
             return true;
         }
 
-        // 左方新添加一列
+        // Insert a new column to the left
         if (matchHotKey("⇧⌘G", event)) {
             insertColumn(vditor, tableElement, cellElement, "beforebegin");
             event.preventDefault();
             return true;
         }
 
-        // 后方新添加一列
+        // Insert a new column to the right
         if (matchHotKey("⇧⌘=", event)) {
             insertColumn(vditor, tableElement, cellElement);
             event.preventDefault();
             return true;
         }
 
-        // 删除当前行
+        // Delete the current row
         if (matchHotKey("⌘-", event)) {
             deleteRow(vditor, range, cellElement);
             event.preventDefault();
             return true;
         }
 
-        // 删除当前列
+        // Delete the current column
         if (matchHotKey("⇧⌘-", event)) {
             deleteColumn(vditor, range, tableElement, cellElement);
             event.preventDefault();
             return true;
         }
 
-        // 剧左
+        // Align left
         if (matchHotKey("⇧⌘L", event)) {
             if (vditor.currentMode === "ir") {
                 setTableAlign(tableElement, "left");
@@ -925,7 +925,7 @@ export const fixTable = (vditor: IVditor, event: KeyboardEvent, range: Range) =>
             }
         }
 
-        // 剧中
+        // Align center
         if (matchHotKey("⇧⌘C", event)) {
             if (vditor.currentMode === "ir") {
                 setTableAlign(tableElement, "center");
@@ -941,7 +941,7 @@ export const fixTable = (vditor: IVditor, event: KeyboardEvent, range: Range) =>
                 }
             }
         }
-        // 剧右
+        // Align right
         if (matchHotKey("⇧⌘R", event)) {
             if (vditor.currentMode === "ir") {
                 setTableAlign(tableElement, "right");
@@ -962,15 +962,15 @@ export const fixTable = (vditor: IVditor, event: KeyboardEvent, range: Range) =>
 };
 
 export const fixCodeBlock = (vditor: IVditor, event: KeyboardEvent, codeRenderElement: HTMLElement, range: Range) => {
-    // 行级代码块中 command + a，近对当前代码块进行全选
+    // For code block (PRE), Cmd+A selects the block content
     if (codeRenderElement.tagName === "PRE" && matchHotKey("⌘A", event)) {
         range.selectNodeContents(codeRenderElement.firstElementChild);
         event.preventDefault();
         return true;
     }
 
-    // tab
-    // TODO shift + tab, shift and 选中文字
+    // Tab handling inside code block
+    // TODO: handle shift+Tab and selected text
     if (vditor.options.tab && event.key === "Tab" && !event.shiftKey && range.toString() === "") {
         range.insertNode(document.createTextNode(vditor.options.tab));
         range.collapse(false);
@@ -979,11 +979,11 @@ export const fixCodeBlock = (vditor: IVditor, event: KeyboardEvent, codeRenderEl
         return true;
     }
 
-    // Backspace: 光标位于第零个字符，仅删除代码块标签
+    // Backspace: when caret is at the first character, only remove the code block wrapper
     if (event.key === "Backspace" && !isCtrl(event) && !event.shiftKey && !event.altKey) {
         const codePosition = getSelectPosition(codeRenderElement, vditor[vditor.currentMode].element, range);
         if ((codePosition.start === 0 ||
-                (codePosition.start === 1 && codeRenderElement.innerText === "\n")) // 空代码块，光标在 \n 后
+                (codePosition.start === 1 && codeRenderElement.innerText === "\n")) // Empty code block — caret is after "\\n"
             && range.toString() === "") {
             codeRenderElement.parentElement.outerHTML =
                 `<p data-block="0"><wbr>${codeRenderElement.firstElementChild.innerHTML}</p>`;
@@ -994,7 +994,7 @@ export const fixCodeBlock = (vditor: IVditor, event: KeyboardEvent, codeRenderEl
         }
     }
 
-    // 换行
+    // Newline
     if (!isCtrl(event) && !event.altKey && event.key === "Enter") {
         if (!codeRenderElement.firstElementChild.textContent.endsWith("\n")) {
             codeRenderElement.firstElementChild.insertAdjacentText("beforeend", "\n");
@@ -1021,9 +1021,9 @@ export const fixBlockquote = (vditor: IVditor, range: Range, event: KeyboardEven
     const startContainer = range.startContainer;
     const blockquoteElement = hasClosestByMatchTag(startContainer, "BLOCKQUOTE");
     if (blockquoteElement && range.toString() === "") {
-        if (event.key === "Backspace" && !isCtrl(event) && !event.shiftKey && !event.altKey &&
+            if (event.key === "Backspace" && !isCtrl(event) && !event.shiftKey && !event.altKey &&
             getSelectPosition(blockquoteElement, vditor[vditor.currentMode].element, range).start === 0) {
-            // Backspace: 光标位于引用中的第零个字符，仅删除引用标签
+            // Backspace: caret is at the first character inside blockquote; only remove the blockquote marker
             range.insertNode(document.createElement("wbr"));
             blockquoteElement.outerHTML = blockquoteElement.innerHTML;
             setRangeByWbr(vditor[vditor.currentMode].element, range);
@@ -1032,24 +1032,24 @@ export const fixBlockquote = (vditor: IVditor, range: Range, event: KeyboardEven
             return true;
         }
 
-        if (pElement && event.key === "Enter" && !isCtrl(event) && !event.shiftKey && !event.altKey
+            if (pElement && event.key === "Enter" && !isCtrl(event) && !event.shiftKey && !event.altKey
             && pElement.parentElement.tagName === "BLOCKQUOTE") {
-            // Enter: 空行回车应逐层跳出
+            // Enter: pressing Enter on an empty line should unnest one level at a time
             let isEmpty = false;
             if (pElement.innerHTML.replace(Constants.ZWSP, "") === "\n" ||
                 pElement.innerHTML.replace(Constants.ZWSP, "") === "") {
-                // 空 P
+                // Empty P
                 isEmpty = true;
                 pElement.remove();
             } else if (pElement.innerHTML.endsWith("\n\n") &&
                 getSelectPosition(pElement, vditor[vditor.currentMode].element, range).start ===
                 pElement.textContent.length - 1) {
-                // 软换行
+                // Soft line break
                 pElement.innerHTML = pElement.innerHTML.substr(0, pElement.innerHTML.length - 2);
                 isEmpty = true;
             }
             if (isEmpty) {
-                // 需添加零宽字符，否则的话无法记录 undo
+                // Need to add a zero-width character; otherwise undo cannot be recorded
                 blockquoteElement.insertAdjacentHTML("afterend", `<p data-block="0">${Constants.ZWSP}<wbr>\n</p>`);
                 setRangeByWbr(vditor[vditor.currentMode].element, range);
                 execAfterRender(vditor);
@@ -1059,7 +1059,7 @@ export const fixBlockquote = (vditor: IVditor, range: Range, event: KeyboardEven
         }
         const blockElement = hasClosestBlock(startContainer);
         if (vditor.currentMode === "wysiwyg" && blockElement && matchHotKey("⇧⌘;", event)) {
-            // 插入 blockquote
+            // Insert blockquote
             range.insertNode(document.createElement("wbr"));
             blockElement.outerHTML = `<blockquote data-block="0">${blockElement.outerHTML}</blockquote>`;
             setRangeByWbr(vditor.wysiwyg.element, range);
@@ -1095,7 +1095,7 @@ export const fixTask = (vditor: IVditor, range: Range, event: KeyboardEvent) => 
             return true;
         }
 
-        // Backspace: 在选择框前进行删除
+        // Backspace: delete before the checkbox input
         if (event.key === "Backspace" && !isCtrl(event) && !event.shiftKey && !event.altKey && range.toString() === ""
             && range.startOffset === 1
             && ((startContainer.nodeType === 3 && startContainer.previousSibling &&
@@ -1124,17 +1124,17 @@ export const fixTask = (vditor: IVditor, range: Range, event: KeyboardEvent) => 
 
         if (event.key === "Enter" && !isCtrl(event) && !event.shiftKey && !event.altKey) {
             if (taskItemElement.textContent.trim() === "") {
-                // 当前任务列表无文字
+                // current task item is empty
                 if (hasClosestByClassName(taskItemElement.parentElement, "vditor-task")) {
-                    // 为子元素时，需进行反向缩进
+                    // When nested, perform outdent
                     const topListElement = getTopList(startContainer);
                     if (topListElement) {
                         listOutdent(vditor, taskItemElement, range, topListElement);
                     }
                 } else {
-                    // 仅有一级任务列表
+                    // single-level task list only
                     if (taskItemElement.nextElementSibling) {
-                        // 任务列表下方还有元素，需要使用用段落隔断
+                        // There are elements after the task list; use a paragraph to separate
                         let afterHTML = "";
                         let beforeHTML = "";
                         let isAfter = false;
@@ -1161,23 +1161,23 @@ export const fixTask = (vditor: IVditor, range: Range, event: KeyboardEvent) => 
                         taskItemElement.parentElement.outerHTML = `${beforeHTML}<p data-block="0"><wbr>\n</p><${parentTagName}
  data-tight="true"${dataMarker} data-block="0"${startAttribute}>${afterHTML}</${parentTagName}>`;
                     } else {
-                        // 任务列表下方无任务列表元素
+                        // No task list elements after the current task list
                         taskItemElement.parentElement.insertAdjacentHTML("afterend", `<p data-block="0"><wbr>\n</p>`);
                         if (taskItemElement.parentElement.querySelectorAll("li").length === 1) {
-                            // 任务列表仅有一项时，使用 p 元素替换
+                            // If task list has only one item, replace with a <p> element
                             taskItemElement.parentElement.remove();
                         } else {
-                            // 任务列表有多项时，当前任务列表位于最后一项，移除该任务列表
+                            // If multiple items and current task is the last, remove this task item
                             taskItemElement.remove();
                         }
                     }
                 }
             } else if (startContainer.nodeType !== 3 && range.startOffset === 0 &&
                 (startContainer.firstChild as HTMLElement).tagName === "INPUT") {
-                // 光标位于 input 之前
+                // Caret is before the input
                 range.setStart(startContainer.childNodes[1], 1);
             } else {
-                // 当前任务列表有文字，光标后的文字需添加到新任务列表中
+                // Current task item has text; text after caret should be added to a new task list item
                 range.setEndAfter(taskItemElement.lastChild);
                 taskItemElement.insertAdjacentHTML("afterend", `<li class="vditor-task" data-marker="${taskItemElement.getAttribute("data-marker")}"><input type="checkbox"> <wbr></li>`);
                 document.querySelector("wbr").after(range.extractContents());
@@ -1194,7 +1194,7 @@ export const fixTask = (vditor: IVditor, range: Range, event: KeyboardEvent) => 
 
 export const fixDelete = (vditor: IVditor, range: Range, event: KeyboardEvent, pElement: HTMLElement | false) => {
     if (range.startContainer.nodeType !== 3) {
-        // 光标位于 hr 前，hr 前有内容
+        // Caret is before an HR; there is content before the HR
         const rangeElement = (range.startContainer as HTMLElement).children[range.startOffset];
         if (rangeElement && rangeElement.tagName === "HR") {
             range.selectNodeContents(rangeElement.previousElementSibling);
@@ -1209,13 +1209,13 @@ export const fixDelete = (vditor: IVditor, range: Range, event: KeyboardEvent, p
         if (previousElement && getSelectPosition(pElement, vditor[vditor.currentMode].element, range).start === 0 &&
             ((isFirefox() && previousElement.tagName === "HR") || previousElement.tagName === "TABLE")) {
             if (previousElement.tagName === "TABLE") {
-                // table 后删除 https://github.com/Vanessa219/vditor/issues/243
+                // Delete after table https://github.com/Vanessa219/vditor/issues/243
                 const lastCellElement = previousElement.lastElementChild.lastElementChild.lastElementChild;
                 lastCellElement.innerHTML =
                     lastCellElement.innerHTML.trimLeft() + "<wbr>" + pElement.textContent.trim();
                 pElement.remove();
             } else {
-                // 光标位于 hr 后进行删除
+                // Delete when caret is after HR
                 previousElement.remove();
             }
             setRangeByWbr(vditor[vditor.currentMode].element, range);
@@ -1356,7 +1356,7 @@ export const paste = async (vditor: IVditor, event: (ClipboardEvent | DragEvent)
         }
     };
 
-    // 浏览器地址栏拷贝处理
+    // Browser address bar copy handling
     if (textHTML.replace(/&amp;/g, "&").replace(/<(|\/)(html|body|meta)[^>]*?>/ig, "").trim() ===
         `<a href="${textPlain}">${textPlain}</a>` ||
         textHTML.replace(/&amp;/g, "&").replace(/<(|\/)(html|body|meta)[^>]*?>/ig, "").trim() ===
@@ -1379,7 +1379,7 @@ export const paste = async (vditor: IVditor, event: (ClipboardEvent | DragEvent)
         hasClosestByAttribute(event.target, "data-type", "code-block") :
         hasClosestByMatchTag(event.target, "CODE");
     if (codeElement) {
-        // 粘贴在代码位置
+        // Paste in code location
         if (vditor.currentMode === "sv") {
             document.execCommand("insertHTML", false, textPlain.replace(/&/g, "&amp;").replace(/</g, "&lt;"));
         } else {
@@ -1405,7 +1405,7 @@ export const paste = async (vditor: IVditor, event: (ClipboardEvent | DragEvent)
             const tempElement = document.createElement("div");
             tempElement.innerHTML = textHTML;
             if (!vditor.options.upload.base64ToLink) {
-                // word 复制的图文混合，替换为 link: <v:imagedata src="file:///C:/Users/ADMINI~1/AppData/Local/Temp/msohtmlclip1/01/clip_image001.png" o:title="">
+                // Word copy may contain mixed images and text; replace VML image tags with links: <v:imagedata src="file:///C:/Users/ADMINI~1/AppData/Local/Temp/msohtmlclip1/01/clip_image001.png" o:title="">
                 await processVMLImage(vditor, tempElement, ("clipboardData" in event ? event.clipboardData : event.dataTransfer).getData("text/rtf"));
             }
 

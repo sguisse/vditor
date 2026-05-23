@@ -31,7 +31,7 @@ export const processKeydown = (vditor: IVditor, event: KeyboardEvent) => {
         return false;
     }
 
-    // 添加第一次记录 undo 的光标
+    // Record initial cursor position for undo
     if (event.key.indexOf("Arrow") === -1 && event.key !== "Meta" && event.key !== "Control" && event.key !== "Alt" &&
         event.key !== "Shift" && event.key !== "CapsLock" && event.key !== "Escape" && !/^F\d{1,2}$/.test(event.key)) {
         vditor.undo.recordFirstPosition(vditor, event);
@@ -48,13 +48,13 @@ export const processKeydown = (vditor: IVditor, event: KeyboardEvent) => {
 
     fixHR(range);
 
-    // 仅处理以下快捷键操作
+    // Only handle the following shortcut keys
     if (event.key !== "Enter" && event.key !== "Tab" && event.key !== "Backspace" && event.key.indexOf("Arrow") === -1
         && !isCtrl(event) && event.key !== "Escape" && event.key !== "Delete") {
         return false;
     }
 
-    // 斜体、粗体、内联代码块中换行
+    // Newline inside emphasis, strong, or inline code
     const newlineElement = hasClosestByAttribute(startContainer, "data-newline", "1");
     if (!isCtrl(event) && !event.altKey && !event.shiftKey && event.key === "Enter" && newlineElement
         && range.startOffset < newlineElement.textContent.length) {
@@ -71,7 +71,7 @@ export const processKeydown = (vditor: IVditor, event: KeyboardEvent) => {
     }
 
     const pElement = hasClosestByMatchTag(startContainer, "P");
-    // md 处理
+    // Markdown processing
     if (fixMarkdown(event, vditor, pElement, range)) {
         return true;
     }
@@ -83,26 +83,26 @@ export const processKeydown = (vditor: IVditor, event: KeyboardEvent) => {
     if (fixBlockquote(vditor, range, event, pElement)) {
         return true;
     }
-    // 代码块
+    // Code block
     const preRenderElement = hasClosestByClassName(startContainer, "vditor-ir__marker--pre");
     if (preRenderElement && preRenderElement.tagName === "PRE") {
         const codeRenderElement = preRenderElement.firstChild as HTMLElement;
         if (fixCodeBlock(vditor, event, preRenderElement, range)) {
             return true;
         }
-        // 数学公式上无元素，按上或左将添加新块
+        // If there is no element above a math/html block, pressing ArrowUp or ArrowLeft will add a new block
         if ((codeRenderElement.getAttribute("data-type") === "math-block"
                 || codeRenderElement.getAttribute("data-type") === "html-block") &&
             insertBeforeBlock(vditor, event, range, codeRenderElement, preRenderElement.parentElement)) {
             return true;
         }
 
-        // 代码块下无元素或者为代码块/table 元素，添加空块
+        // If there is no element below the code block or the next element is a code block/table, add an empty block
         if (insertAfterBlock(vditor, event, range, codeRenderElement, preRenderElement.parentElement)) {
             return true;
         }
     }
-    // 代码块语言
+    // Code block language
     const preBeforeElement = hasClosestByAttribute(startContainer, "data-type", "code-block-info");
     if (preBeforeElement) {
         if (event.key === "Enter" || event.key === "Tab") {
@@ -115,15 +115,15 @@ export const processKeydown = (vditor: IVditor, event: KeyboardEvent) => {
 
         if (event.key === "Backspace") {
             const start = getSelectPosition(preBeforeElement, vditor.ir.element).start;
-            if (start === 1) { // 删除零宽空格
+            if (start === 1) { // remove zero-width space
                 range.setStart(startContainer, 0);
             }
-            if (start === 2) { // 删除时清空自动补全语言
+            if (start === 2) { // clear autocomplete language on delete
                 vditor.hint.recentLanguage = "";
             }
         }
         if (insertBeforeBlock(vditor, event, range, preBeforeElement, preBeforeElement.parentElement)) {
-            // 上无元素，按上或左将添加新块
+            // If there is no element above, pressing ArrowUp or ArrowLeft will add a new block
             hidePanel(vditor, ["hint"]);
             return true;
         }
@@ -147,19 +147,19 @@ export const processKeydown = (vditor: IVditor, event: KeyboardEvent) => {
         return true;
     }
 
-    // task list
+    // Task list
     if (fixTask(vditor, range, event)) {
         return true;
     }
 
-    // tab
+    // Tab key handling
     if (fixTab(vditor, range, event)) {
         return true;
     }
 
     const headingElement = hasClosestByHeadings(startContainer);
     if (headingElement) {
-        // enter++: 标题变大
+        // Hotkey: increase heading level
         if (matchHotKey("⌘=", event)) {
             const headingMarkerElement = headingElement.querySelector(".vditor-ir__marker--heading");
             if (headingMarkerElement && headingMarkerElement.textContent.trim().length > 1) {
@@ -169,7 +169,7 @@ export const processKeydown = (vditor: IVditor, event: KeyboardEvent) => {
             return true;
         }
 
-        // enter++: 标题变小
+        // Hotkey: decrease heading level
         if (matchHotKey("⌘-", event)) {
             const headingMarkerElement = headingElement.querySelector(".vditor-ir__marker--heading");
             if (headingMarkerElement && headingMarkerElement.textContent.trim().length < 6) {
@@ -191,12 +191,13 @@ export const processKeydown = (vditor: IVditor, event: KeyboardEvent) => {
                 blockElement.previousElementSibling.getAttribute("data-type") === "math-block")) {
             const rangeStart = getSelectPosition(blockElement, vditor.ir.element, range).start;
             if (rangeStart === 0 || (rangeStart === 1 && blockElement.innerText.startsWith(Constants.ZWSP))) {
-                // 当前块删除后光标落于代码渲染块上，当前块会被删除，因此需要阻止事件，不能和 keyup 中的代码块处理合并
+                // After deleting the current block the caret may land inside the rendered code block; the current block will be removed,
+                // so prevent the event to avoid merging with code block handling in keyup
                 range.selectNodeContents(blockElement.previousElementSibling.querySelector(".vditor-ir__marker--pre code"));
                 range.collapse(false);
                 expandMarker(range, vditor);
                 if (blockElement.textContent.trim().replace(Constants.ZWSP, "") === "") {
-                    // 当前块为空且不是最后一个时，需要删除
+                    // If the current block is empty and not the last one, remove it
                     blockElement.remove();
                     processAfterRender(vditor);
                 }
@@ -205,7 +206,7 @@ export const processKeydown = (vditor: IVditor, event: KeyboardEvent) => {
             }
         }
 
-        // 光标位于标题前，marker 后
+        // Caret is positioned after the heading marker
         if (headingElement) {
             const headingLength = headingElement.firstElementChild.textContent.length;
             if (getSelectPosition(headingElement, vditor.ir.element).start === headingLength && headingLength !== 0) {

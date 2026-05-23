@@ -32,8 +32,8 @@ export const getCursorPosition = (editor: HTMLElement) => {
     const parentRect = editor.parentElement.getBoundingClientRect();
     let cursorRect;
     if (range.getClientRects().length === 0) {
-        if (range.startContainer.nodeType === 3) {
-            // 空行时，会出现没有 br 的情况，需要根据父元素 <p> 获取位置信息
+            if (range.startContainer.nodeType === 3) {
+            // For empty lines there may be no <br>; get position from parent <p>
             const parent = range.startContainer.parentElement;
             if (parent && parent.getClientRects().length > 0) {
                 cursorRect = parent.getClientRects()[0];
@@ -45,9 +45,9 @@ export const getCursorPosition = (editor: HTMLElement) => {
             }
         } else {
             const children = (range.startContainer as Element).children;
-            if (children[range.startOffset] &&
+                if (children[range.startOffset] &&
                 children[range.startOffset].getClientRects().length > 0) {
-                // markdown 模式回车
+                // Line break in markdown mode
                 cursorRect = children[range.startOffset].getClientRects()[0];
             } else if (range.startContainer.childNodes.length > 0) {
                 // in table or code block
@@ -201,8 +201,8 @@ export const setRangeByWbr = (element: HTMLElement, range: Range) => {
                 // <wbr><br> https://github.com/Vanessa219/vditor/issues/400
                 range.setStartBefore(wbrElement.nextSibling);
             }
-        } else {
-            // 内容为空
+            } else {
+                // Content is empty
             range.setStart(wbrElement.parentElement, 0);
         }
     } else {
@@ -236,7 +236,7 @@ export const setRangeByWbr = (element: HTMLElement, range: Range) => {
 };
 
 export const insertHTML = (html: string, vditor: IVditor) => {
-    // 使用 lute 方法会添加 p 元素，只有一个 p 元素的时候进行删除
+    // Using lute may add a <p> element; if there's only one <p>, remove it
     const tempElement = document.createElement("div");
     tempElement.innerHTML = html;
     const tempBlockElement = tempElement.querySelectorAll("p");
@@ -256,7 +256,7 @@ export const insertHTML = (html: string, vditor: IVditor) => {
 
     if (pasteElement.firstElementChild &&
         pasteElement.firstElementChild.getAttribute("data-block") === "0") {
-        // 粘贴内容为块元素时，应在下一段落中插入
+        // When pasted content is a block element, insert it after the current paragraph
         pasteElement.lastElementChild.insertAdjacentHTML("beforeend", "<wbr>");
         const blockElement = hasClosestBlock(range.startContainer);
         if (!blockElement) {

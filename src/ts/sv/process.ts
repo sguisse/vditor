@@ -64,7 +64,7 @@ export const processSpinVditorSVDOM = (html: string, vditor: IVditor) => {
 export const processPreviousMarkers = (spanElement: HTMLElement) => {
     const spanType = spanElement.getAttribute("data-type");
     let previousElement = spanElement.previousElementSibling;
-    // 有内容的子列表/标题，在其 marker 后换行
+    // For non-empty sub-lists/headings, insert a newline after their marker
     let markerText = (spanType && spanType !== "text" && spanType !== "table" && spanType !== "heading-marker" &&
         spanType !== "newline" && spanType !== "yaml-front-matter-open-marker" && spanType !== "yaml-front-matter-close-marker"
         && spanType !== "code-block-info" && spanType !== "code-block-close-marker" && spanType !== "code-block-open-marker") ?
@@ -153,7 +153,7 @@ export const processHeading = (vditor: IVditor, value: string) => {
 export const processToolbar = (vditor: IVditor, actionBtn: Element, prefix: string, suffix: string) => {
     const range = getEditorRange(vditor);
     const commandName = actionBtn.getAttribute("data-type");
-    // 添加
+    // Add
     if (vditor.sv.element.childNodes.length === 0) {
         vditor.sv.element.innerHTML = `<span data-type="p" data-block="0"><span data-type="text"><wbr></span></span><span data-type="newline"><br><span style="display: none">
 </span></span>`;
@@ -176,7 +176,7 @@ export const processToolbar = (vditor: IVditor, actionBtn: Element, prefix: stri
     } else if (commandName === "italic" || commandName === "bold" || commandName === "strike" ||
         commandName === "inline-code" || commandName === "code" || commandName === "table" || commandName === "line") {
         let html;
-        // https://github.com/Vanessa219/vditor/issues/563 代码块不需要后面的 ```
+        // https://github.com/Vanessa219/vditor/issues/563 code blocks do not require trailing ```
         if (range.toString() === "") {
             html = `${prefix}${Lute.Caret}${commandName === "code" ? "" : suffix}`;
         } else {

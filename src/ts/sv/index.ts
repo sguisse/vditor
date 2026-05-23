@@ -84,7 +84,7 @@ class Editor {
 
         this.element.addEventListener("input", (event: InputEvent) => {
             if (event.inputType === "deleteByDrag" || event.inputType === "insertFromDrop") {
-                // https://github.com/Vanessa219/vditor/issues/801 编辑器内容拖拽问题
+                // https://github.com/Vanessa219/vditor/issues/801 Editor content drag/drop issue
                 return;
             }
             if (this.composingLock ||  event.data === "‘" || event.data === "“" || event.data === "《") {
@@ -111,7 +111,7 @@ class Editor {
                 vditor.sv.element.firstElementChild && vditor.sv.element.firstElementChild.tagName === "DIV"
                 && vditor.sv.element.firstElementChild.childElementCount === 2
                 && (vditor.sv.element.firstElementChild.textContent === "" || vditor.sv.element.textContent === "\n")) {
-                // 为空时显示 placeholder
+                // Show placeholder when empty
                 vditor.sv.element.innerHTML = "";
                 return;
             }

@@ -44,7 +44,7 @@ export const clickToc = (event: MouseEvent & { target: HTMLElement }, vditor: IV
 };
 
 export const keydownToc = (blockElement: HTMLElement, vditor: IVditor, event: KeyboardEvent, range: Range) => {
-    // toc 前无元素，插入空块
+    // Insert an empty block when there is no element before the TOC
     if (blockElement.previousElementSibling &&
         blockElement.previousElementSibling.classList.contains("vditor-toc")) {
         if (event.key === "Backspace" &&
@@ -57,7 +57,7 @@ export const keydownToc = (blockElement: HTMLElement, vditor: IVditor, event: Ke
             return true;
         }
     }
-    // toc 后无元素，插入空块
+    // Insert an empty block when there is no element after the TOC
     if (blockElement.nextElementSibling &&
         blockElement.nextElementSibling.classList.contains("vditor-toc")) {
         if (event.key === "Delete" &&
@@ -71,7 +71,7 @@ export const keydownToc = (blockElement: HTMLElement, vditor: IVditor, event: Ke
             return true;
         }
     }
-    // toc 删除
+    // TOC removal
     if (event.key === "Backspace" || event.key === "Delete") {
         const tocElement = hasClosestByClassName(range.startContainer, "vditor-toc");
         if (tocElement) {

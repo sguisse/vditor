@@ -5,10 +5,10 @@ declare let vditorTest: any;
 describe("use puppeteer to test methods", () => {
     let browser: any;
     let page: any;
-    const defaultValue = `下一代的 Markdown 编辑器，为未来而构建
-[Vditor](https://github.com/Vanessa219/vditor) 是一款浏览器端的 Markdown 编辑器，使用 TypeScript 实现。`;
-    const insertValue = "于是，Vditor 就这样诞生了。";
-    const updateValue = "* [Vditor 使用指南](https://ld246.com/article/1549638745630?r=Vanessa)";
+    const defaultValue = `The next-generation Markdown editor, built for the future
+[Vditor](https://github.com/Vanessa219/vditor) is a browser-based Markdown editor implemented in TypeScript.`;
+    const insertValue = "NowVditor was born.";
+    const updateValue = "* [Vditor Guide](https://ld246.com/article/1549638745630?r=Vanessa)";
 
     beforeAll(async () => {
         browser = await puppeteer.launch();
@@ -22,8 +22,8 @@ describe("use puppeteer to test methods", () => {
 
     it("method: getValue", async () => {
         const result = await page.evaluate(() => {
-            vditorTest.setValue(`下一代的 Markdown 编辑器，为未来而构建
-[Vditor](https://github.com/Vanessa219/vditor) 是一款浏览器端的 Markdown 编辑器，使用 TypeScript 实现。`);
+            vditorTest.setValue(`The next-generation Markdown editor, built for the future
+[Vditor](https://github.com/Vanessa219/vditor) is a browser-based Markdown editor implemented in TypeScript.`);
             return vditorTest.getValue();
         });
         expect(result).toBe(defaultValue + "\n");
@@ -31,7 +31,7 @@ describe("use puppeteer to test methods", () => {
 
     it("method: insertValue", async () => {
         const result = await page.evaluate(() => {
-            vditorTest.insertValue("于是，Vditor 就这样诞生了。");
+            vditorTest.insertValue("NowVditor was born.");
             return vditorTest.getValue();
         });
         expect(result).toBe(defaultValue + insertValue + "\n");
@@ -79,7 +79,7 @@ describe("use puppeteer to test methods", () => {
 
     it("method: setValue", async () => {
         const result = await page.evaluate(() => {
-            vditorTest.setValue("于是，Vditor 就这样诞生了。");
+            vditorTest.setValue("NowVditor was born.");
             return vditorTest.getValue();
         });
         expect(result).toBe(insertValue + "\n");
@@ -95,7 +95,7 @@ describe("use puppeteer to test methods", () => {
                 value: vditorTest.getValue(),
             };
         });
-        expect(result.value).toBe("Vditor 就这样诞生了。\n");
+        expect(result.value).toBe("Vditor was born.\n");
         expect(result.cache).toBe(insertValue + "\n");
     });
 
@@ -104,14 +104,14 @@ describe("use puppeteer to test methods", () => {
             vditorTest.deleteValue();
             return vditorTest.getValue();
         });
-        expect(result).toBe("Vditor 就这样诞生了。\n");
+        expect(result).toBe("Vditor was born.\n");
     });
 
     it("method: updateValue and enableCache", async () => {
         const result = await page.evaluate(() => {
             vditorTest.enableCache();
             vditorTest.setSelection(0, 14);
-            vditorTest.updateValue("* [Vditor 使用指南](https://ld246.com/article/1549638745630?r=Vanessa)");
+            vditorTest.updateValue("* [Vditor Guide](https://ld246.com/article/1549638745630?r=Vanessa)");
             return {
                 value: vditorTest.getValue(),
                 cache: localStorage.getItem("vditorvditorTest"),
@@ -131,9 +131,9 @@ describe("use puppeteer to test methods", () => {
 
     it("method: html2md", async () => {
         const result = await page.evaluate(() => {
-            return vditorTest.html2md('<a href="https://ld246.com/tag/vditor">讨论区</a>');
+            return vditorTest.html2md('<a href="https://ld246.com/tag/vditor">Discussion</a>');
         });
-        expect(result).toBe("[讨论区](https://ld246.com/tag/vditor)");
+        expect(result).toBe("[Discussion](https://ld246.com/tag/vditor)");
     });
 
     it("method: isUploading false", async () => {

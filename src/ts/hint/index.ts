@@ -116,7 +116,7 @@ ${i === 0 ? "class='vditor-hint--current'" : ""}> ${html}</button>`;
                 event.preventDefault();
             });
         });
-        // hint 展现在上部
+        // Position the hint above when it would overflow the bottom of the viewport
         if (this.element.getBoundingClientRect().bottom > window.innerHeight) {
             this.element.style.top = `${y - this.element.offsetHeight}px`;
         }
@@ -132,7 +132,7 @@ ${i === 0 ? "class='vditor-hint--current'" : ""}> ${html}</button>`;
         const value = decodeURIComponent(element.getAttribute("data-value"));
         const range: Range = window.getSelection().getRangeAt(0);
 
-        // 代码提示
+        // Code completion for code blocks
         if (vditor.currentMode === "ir") {
             const preBeforeElement = hasClosestByAttribute(range.startContainer, "data-type", "code-block-info");
             if (preBeforeElement) {
@@ -160,8 +160,8 @@ ${i === 0 ? "class='vditor-hint--current'" : ""}> ${html}</button>`;
                 inputElement.value = value.trimRight();
                 range.selectNodeContents(inputElement);
                 range.collapse(false);
-                // {detail: 1}用于标识这个自定义事件是在编程语言选择后触发的
-                // 用于在鼠标选择语言后，自动聚焦到代码输入框
+                // {detail: 1} used to indicate this custom event was triggered after selecting a programming language
+                // Used to auto-focus the code input after selecting a language with the mouse
                 inputElement.dispatchEvent(new CustomEvent("input", {detail: 1}));
                 this.recentLanguage = value.trimRight();
                 return;

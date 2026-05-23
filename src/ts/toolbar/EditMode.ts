@@ -119,7 +119,7 @@ export const setEditMode = (vditor: IVditor, type: string, event: Event | string
         vditor.currentMode = "sv";
         let svHTML = processSpinVditorSVDOM(markdownText, vditor);
         if (svHTML === "<div data-block='0'></div>") {
-            // https://github.com/Vanessa219/vditor/issues/654 SV 模式 Placeholder 显示问题
+            // SV mode placeholder display issue (see issue) https://github.com/Vanessa219/vditor/issues/654
             svHTML = "";
         }
         vditor.sv.element.innerHTML = svHTML;
@@ -132,8 +132,8 @@ export const setEditMode = (vditor: IVditor, type: string, event: Event | string
         setPadding(vditor);
     }
     vditor.undo.resetIcon(vditor);
-    if (typeof event !== "string") {
-        // 初始化不 focus
+        if (typeof event !== "string") {
+        // Do not change focus during initialization
         vditor[vditor.currentMode].element.focus();
         highlightToolbar(vditor);
     }
@@ -186,7 +186,7 @@ export class EditMode extends MenuItem {
         });
 
         panelElement.children.item(2).addEventListener(getEventName(), (event: Event) => {
-            // markdown
+            // sv (split view)
             setEditMode(vditor, "sv", event);
             event.preventDefault();
             event.stopPropagation();

@@ -65,7 +65,7 @@ class Undo {
         this[vditor.currentMode].redoStack.push(state);
         this.renderDiff(state, vditor);
         this[vditor.currentMode].hasUndo = true;
-        // undo 操作后，需要关闭 hint
+        // Close hint after undo operation
         hidePanel(vditor, ["hint"]);
     }
 
@@ -90,26 +90,26 @@ class Undo {
             return;
         }
         if (isFirefox() && event.key === "Backspace") {
-            // Firefox 第一次删除无效
+            // Firefox: first Backspace may be ineffective
             return;
         }
         if (isSafari()) {
-            // Safari keydown 在 input 之后，不需要重复记录历史
+            // On Safari, keydown after input should not duplicate history recording
             return;
         }
         const text = this.addCaret(vditor);
         if (text.replace("<wbr>", "").replace(" vditor-ir__node--expand", "")
             !== this[vditor.currentMode].undoStack[0][0].diffs[0][1].replace("<wbr>", "")) {
-            // 当还不没有存入 undo 栈时，按下 ctrl 后会覆盖 lastText
+            // If lastText hasn't been stored in the undo stack yet, pressing modifier keys may overwrite lastText
             return;
         }
         this[vditor.currentMode].undoStack[0][0].diffs[0][1] = text;
         this[vditor.currentMode].lastText = text;
-        // 不能添加 setSelectionFocus(cloneRange); 否则 windows chrome 首次输入会烂
+        // Do not call setSelectionFocus(cloneRange); otherwise first input in Chrome on Windows may break
     }
 
     public addToUndoStack(vditor: IVditor) {
-        // afterRenderEvent.ts 已经 debounce
+        // afterRenderEvent.ts is already debounced
         const text = this.addCaret(vditor, true);
         const diff = this.dmp.diff_main(text, this[vditor.currentMode].lastText, true);
         const patchList = this.dmp.patch_make(text, this[vditor.currentMode].lastText, diff);
@@ -166,7 +166,7 @@ class Undo {
         }
 
         if (!vditor[vditor.currentMode].element.querySelector("wbr")) {
-            // Safari 第一次输入没有光标，需手动定位到结尾
+            // Safari: first input may have no cursor, manually position it at the end
             const range = getSelection().getRangeAt(0);
             range.setEndBefore(vditor[vditor.currentMode].element);
             range.collapse(false);
@@ -235,7 +235,7 @@ class Undo {
                 range.insertNode(wbrElement);
             }
         }
-        // 移除数学公式、echart 渲染 https://github.com/Vanessa219/vditor/issues/1738
+        // Remove math and echarts rendering (see https://github.com/Vanessa219/vditor/issues/1738)
         const cloneElement = vditor[vditor.currentMode].element.cloneNode(true) as HTMLElement;
         cloneElement.querySelectorAll(`.vditor-${vditor.currentMode}__preview[data-render='1']`)
             .forEach((item: HTMLElement) => {
@@ -258,7 +258,7 @@ class Undo {
         const text = cloneElement.innerHTML;
         vditor[vditor.currentMode].element.querySelectorAll(".vditor-wbr").forEach((item) => {
             item.remove();
-            // 使用 item.outerHTML = "" 会产生 https://github.com/Vanessa219/vditor/pull/686;
+            // Using item.outerHTML = "" can cause issues (see https://github.com/Vanessa219/vditor/pull/686)
         });
         if (setFocus && cloneRange) {
             setSelectionFocus(cloneRange);

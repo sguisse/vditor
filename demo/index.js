@@ -85,7 +85,7 @@ const initVditor = (language) => {
         },
         hint: {
             emojiPath: "https://cdn.jsdelivr.net/npm/vditor@1.8.3/dist/images/emoji",
-            emojiTail: "<a href=\"https://ld246.com/settings/function\" target=\"_blank\">设置常用表情</a>",
+            emojiTail: "<a href=\"https://ld246.com/settings/function\" target=\"_blank\">Set common emojis</a>",
             emoji: {
                 "sd": "💔",
                 "j": "https://cdn.jsdelivr.net/npm/vditor@1.3.1/dist/images/emoji/j.png",
@@ -114,7 +114,7 @@ const initVditor = (language) => {
                             return [
                                 {
                                     value: "#Vditor",
-                                    html: "<span style=\"color: #999;\">#Vditor</span> ♏ 一款浏览器端的 Markdown 编辑器，支持所见即所得（富文本）、即时渲染（类似 Typora）和分屏预览模式。",
+                                    html: "<span style=\"color: #999;\">#Vditor</span> ♏ A browser-based Markdown editor supporting WYSIWYG, instant rendering (like Typora), and split preview modes.",
                                 }]
                         }
                         return []

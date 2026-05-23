@@ -38,7 +38,7 @@ export class Options {
                 "smile": "😄",
                 "tada": "🎉️",
             },
-            emojiPath: `${Constants.CDN}/dist/images/emoji`,
+            emojiPath: `${Constants.CDN}/images/emoji`,
             extend: [],
             parse: true,
         },
@@ -65,6 +65,7 @@ export class Options {
                 }
             }
         },
+        renderersCDN: {},
         link: {
             isOpen: true,
         },
@@ -167,10 +168,10 @@ export class Options {
 
             if (this.options.cdn) {
                 if (!this.options.preview?.theme?.path) {
-                    this.defaultOptions.preview.theme.path = `${this.options.cdn}/dist/css/content-theme`
+                    this.defaultOptions.preview.theme.path = `${this.options.cdn}/css/content-theme`
                 }
                 if (!this.options.hint?.emojiPath) {
-                    this.defaultOptions.hint.emojiPath = `${this.options.cdn}/dist/images/emoji`;
+                    this.defaultOptions.hint.emojiPath = `${this.options.cdn}/images/emoji`;
                 }
             }
         }

@@ -44,8 +44,8 @@ class Vditor extends VditorMethod {
     private isDestroyed = false;
 
     /**
-     * @param id 要挂载 Vditor 的元素或者元素 ID。
-     * @param options Vditor 参数
+     * @param id The element or element ID to mount Vditor on.
+     * @param options Vditor options
      */
     constructor(id: string | HTMLElement, options?: IOptions) {
         super();
@@ -73,7 +73,7 @@ class Vditor extends VditorMethod {
         const getOptions = new Options(options);
         const mergedOptions = getOptions.merge();
 
-        // 支持自定义国际化
+        // Support custom i18n
         if (!mergedOptions.i18n) {
             if (!["de_DE", "en_US", "es_ES", "fr_FR", "ja_JP", "ko_KR", "pt_BR", "ru_RU", "sv_SE", "vi_VN", "zh_CN", "zh_TW"].includes(mergedOptions.lang)) {
                 throw new Error(
@@ -87,10 +87,10 @@ class Vditor extends VditorMethod {
                         document.head.removeChild(el);
                     }
                 });
-                addScript(`${mergedOptions.cdn}/dist/js/i18n/${mergedOptions.lang}.js`, i18nScriptID).then(() => {
+                addScript(`js/i18n/${mergedOptions.lang}.js`, i18nScriptID, mergedOptions.cdn).then(() => {
                     this.init(id as HTMLElement, mergedOptions);
                 }).catch(error => {
-                    this.showErrorTip(`GET ${mergedOptions.cdn}/dist/js/i18n/${mergedOptions.lang}.js net::ERR_ABORTED 404 (Not Found)`);
+                    this.showErrorTip(`GET js/i18n/${mergedOptions.lang}.js net::ERR_ABORTED 404 (Not Found)`);
                 });
             }
         } else {
@@ -109,7 +109,7 @@ class Vditor extends VditorMethod {
         this.vditor.toolbar.updateConfig(this.vditor, options);
     }
 
-    /** 设置主题 */
+    /** Set theme */
     public setTheme(
         theme: "dark" | "classic",
         contentTheme?: string,
@@ -128,17 +128,17 @@ class Vditor extends VditorMethod {
         }
     }
 
-    /** 获取 Markdown 内容 */
+    /** Get Markdown content */
     public getValue() {
         return getMarkdown(this.vditor);
     }
 
-    /** 获取编辑器当前编辑模式 */
+    /** Get current editor mode */
     public getCurrentMode() {
         return this.vditor.currentMode;
     }
 
-    /** 聚焦到编辑器 */
+    /** Focus editor */
     public focus() {
         if (this.vditor.currentMode === "sv") {
             this.vditor.sv.element.focus();
@@ -149,7 +149,7 @@ class Vditor extends VditorMethod {
         }
     }
 
-    /** 让编辑器失焦 */
+    /** Blur editor */
     public blur() {
         if (this.vditor.currentMode === "sv") {
             this.vditor.sv.element.blur();
@@ -160,7 +160,7 @@ class Vditor extends VditorMethod {
         }
     }
 
-    /** 禁用编辑器 */
+    /** Disable editor */
     public disabled() {
         hidePanel(this.vditor, ["subToolbar", "hint", "popover"]);
         disableToolbar(
@@ -173,7 +173,7 @@ class Vditor extends VditorMethod {
         );
     }
 
-    /** 解除编辑器禁用 */
+    /** Enable editor */
     public enable() {
         enableToolbar(
             this.vditor.toolbar.elements,
@@ -183,7 +183,7 @@ class Vditor extends VditorMethod {
         this.vditor[this.vditor.currentMode].element.setAttribute("contenteditable", "true");
     }
 
-    /** 返回选中的字符串 */
+    /** Return selected string */
     public getSelection() {
         if (this.vditor.currentMode === "wysiwyg") {
             return getSelectText(this.vditor.wysiwyg.element);
@@ -194,34 +194,34 @@ class Vditor extends VditorMethod {
         }
     }
 
-    /** 设置预览区域内容 */
+    /** Set preview content */
     public renderPreview(value?: string) {
         this.vditor.preview.render(this.vditor, value);
     }
 
-    /** 获取焦点位置 */
+    /** Get cursor position */
     public getCursorPosition() {
         return getCursorPosition(this.vditor[this.vditor.currentMode].element);
     }
 
-    /** 上传是否还在进行中 */
+    /** Is upload in progress */
     public isUploading() {
         return this.vditor.upload.isUploading;
     }
 
-    /** 清除缓存 */
+    /** Clear cache */
     public clearCache() {
         if (this.vditor.options.cache.enable && accessLocalStorage()) {
             localStorage.removeItem(this.vditor.options.cache.id);
         }
     }
 
-    /** 禁用缓存 */
+    /** Disable cache */
     public disabledCache() {
         this.vditor.options.cache.enable = false;
     }
 
-    /** 启用缓存 */
+    /** Enable cache */
     public enableCache() {
         if (!this.vditor.options.cache.id) {
             throw new Error(
@@ -231,32 +231,32 @@ class Vditor extends VditorMethod {
         this.vditor.options.cache.enable = true;
     }
 
-    /** HTML 转 md */
+    /** HTML to Markdown */
     public html2md(value: string) {
         return this.vditor.lute.HTML2Md(value);
     }
 
-    /** markdown 转 JSON 输出 */
+    /** Markdown to JSON output */
     public exportJSON(value: string) {
         return this.vditor.lute.RenderJSON(value);
     }
 
-    /** 获取 HTML */
+    /** Get HTML */
     public getHTML() {
         return getHTML(this.vditor);
     }
 
-    /** 消息提示。time 为 0 将一直显示 */
+    /** Show message; time=0 means it will be displayed indefinitely */
     public tip(text: string, time?: number) {
         this.vditor.tip.show(text, time);
     }
 
-    /** 设置预览模式 */
+    /** Set preview mode */
     public setPreviewMode(mode: "both" | "editor") {
         setPreviewMode(mode, this.vditor);
     }
 
-    /** 删除选中内容 */
+    /** Delete selected content */
     public deleteValue() {
         if (window.getSelection().isCollapsed) {
             return;
@@ -264,12 +264,12 @@ class Vditor extends VditorMethod {
         document.execCommand("delete", false);
     }
 
-    /** 更新选中内容 */
+    /** Update selected content */
     public updateValue(value: string) {
         document.execCommand("insertHTML", false, value);
     }
 
-    /** 在焦点处插入内容，并默认进行 Markdown 渲染 */
+    /** Insert content at cursor and render Markdown by default */
     public insertValue(value: string, render = true) {
         const range = getEditorRange(this.vditor);
         range.collapse(true);
@@ -285,7 +285,7 @@ class Vditor extends VditorMethod {
                 inputEvent(this.vditor);
             }
         } else if (this.vditor.currentMode === "wysiwyg") {
-            // 由于 https://github.com/Vanessa219/vditor/issues/1566 不能使用 this.vditor.wysiwyg.preventInput = true;
+            // Due to https://github.com/Vanessa219/vditor/issues/1566 cannot use this.vditor.wysiwyg.preventInput = true;
             if (render) {
                 input(this.vditor, getSelection().getRangeAt(0));
             }
@@ -297,7 +297,7 @@ class Vditor extends VditorMethod {
         }
     }
 
-    /** 在焦点处插入 Markdown */
+    /** Insert Markdown at cursor */
     public insertMD(md: string) {
         // https://github.com/Vanessa219/vditor/issues/1640
         if (this.vditor.currentMode === "ir") {
@@ -311,7 +311,7 @@ class Vditor extends VditorMethod {
         execAfterRender(this.vditor);
     }
 
-    /** 设置编辑器内容 */
+    /** Set editor content */
     public setValue(markdown: string, clearStack = false) {
         if (this.vditor.currentMode === "sv") {
             this.vditor.sv.element.innerHTML = `<div data-block='0'>${this.vditor.lute.SpinVditorSVDOM(markdown)}</div>`;
@@ -354,18 +354,18 @@ class Vditor extends VditorMethod {
         }
     }
 
-    /** 空块 */
+    /** Insert empty block */
     public insertEmptyBlock(position: InsertPosition) {
         insertEmptyBlock(this.vditor, position);
     }
 
-    /** 清空 undo & redo 栈 */
+    /** Clear undo & redo stacks */
     public clearStack() {
         this.vditor.undo.clearStack(this.vditor);
         this.vditor.undo.addToUndoStack(this.vditor);
     }
 
-    /** 销毁编辑器 */
+    /** Destroy editor */
     public destroy() {
         this.vditor.element.innerHTML = this.vditor.originalInnerHTML;
         this.vditor.element.classList.remove("vditor");
@@ -382,7 +382,7 @@ class Vditor extends VditorMethod {
         this.isDestroyed = true;
     }
 
-    /** 获取评论 ID */
+    /** Get comment IDs */
     public getCommentIds() {
         if (this.vditor.currentMode !== "wysiwyg") {
             return [];
@@ -390,7 +390,7 @@ class Vditor extends VditorMethod {
         return this.vditor.wysiwyg.getComments(this.vditor, true);
     }
 
-    /** 高亮评论 */
+    /** Highlight comments */
     public hlCommentIds(ids: string[]) {
         if (this.vditor.currentMode !== "wysiwyg") {
             return;
@@ -417,7 +417,7 @@ class Vditor extends VditorMethod {
         }
     }
 
-    /** 取消评论高亮 */
+    /** Unhighlight comments */
     public unHlCommentIds(ids: string[]) {
         if (this.vditor.currentMode !== "wysiwyg") {
             return;
@@ -443,7 +443,7 @@ class Vditor extends VditorMethod {
         }
     }
 
-    /** 删除评论 */
+    /** Remove comments */
     public removeCommentIds(removeIds: string[]) {
         if (this.vditor.currentMode !== "wysiwyg") {
             return;
@@ -520,8 +520,9 @@ class Vditor extends VditorMethod {
 
         addScript(
             mergedOptions._lutePath ||
-            `${mergedOptions.cdn}/dist/js/lute/lute.min.js`,
+            `js/lute/lute.min.js`,
             "vditorLuteScript",
+            mergedOptions.cdn,
         ).then(() => {
             this.vditor.lute = setLute({
                 autoSpace: this.vditor.options.preview.markdown.autoSpace,
@@ -556,8 +557,8 @@ class Vditor extends VditorMethod {
                 mergedOptions.after();
             }
             if (mergedOptions.icon) {
-                // 防止初始化 2 个编辑器时加载 2 次
-                addScriptSync(`${mergedOptions.cdn}/dist/js/icons/${mergedOptions.icon}.js`, "vditorIconScript");
+                // Prevent loading 2 times when initializing 2 editors
+                addScriptSync(`js/icons/${mergedOptions.icon}.js`, "vditorIconScript", mergedOptions.cdn);
             }
         });
     }

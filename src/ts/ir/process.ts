@@ -11,7 +11,7 @@ import {input} from "./input";
 export const processHint = (vditor: IVditor) => {
     vditor.hint.render(vditor);
     const startContainer = getEditorRange(vditor).startContainer;
-    // 代码块语言提示
+    // Code block language hint
     const preBeforeElement = hasClosestByAttribute(startContainer, "data-type", "code-block-info");
     if (preBeforeElement) {
         if (preBeforeElement.textContent.replace(Constants.ZWSP, "") === "" && vditor.hint.recentLanguage) {
@@ -113,7 +113,7 @@ export const processToolbar = (vditor: IVditor, actionBtn: Element, prefix: stri
         typeElement = typeElement.parentElement;
     }
     let useHighlight = true;
-    // 移除
+    // Remove
     if (actionBtn.classList.contains("vditor-menu--current")) {
         if (commandName === "quote") {
             const quoteElement = hasClosestByMatchTag(typeElement, "BLOCKQUOTE");
@@ -147,7 +147,7 @@ export const processToolbar = (vditor: IVditor, actionBtn: Element, prefix: stri
             actionBtn.classList.remove("vditor-menu--current");
         }
     } else {
-        // 添加
+        // Add
         if (vditor.ir.element.childNodes.length === 0) {
             vditor.ir.element.innerHTML = '<p data-block="0"><wbr></p>';
             setRangeByWbr(vditor.ir.element, range);

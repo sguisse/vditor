@@ -15,24 +15,24 @@ import {getMarkdown} from "../markdown/getMarkdown";
 
 export const input = (vditor: IVditor, range: Range, ignoreSpace = false, event?: InputEvent) => {
     let blockElement = hasClosestBlock(range.startContainer);
-    // 前后可以输入空格
+    // Allow spaces before/after
     if (blockElement && !ignoreSpace && blockElement.getAttribute("data-type") !== "code-block") {
         if ((isHrMD(blockElement.innerHTML) && blockElement.previousElementSibling) ||
             isHeadingMD(blockElement.innerHTML)) {
             return;
         }
 
-        // 前后空格处理
+        // Handle leading/trailing spaces
         const startOffset = getSelectPosition(blockElement, vditor.ir.element, range).start;
 
-        // 开始可以输入空格
+        // Leading spaces allowed
         let startSpace = true;
         for (let i = startOffset - 1;
-            // 软换行后有空格
+            // Spaces after soft line break
              i > blockElement.textContent.substr(0, startOffset).lastIndexOf("\n");
              i--) {
             if (blockElement.textContent.charAt(i) !== " " &&
-                // 多个 tab 前删除不形成代码块 https://github.com/Vanessa219/vditor/issues/162 1
+                // Deleting multiple leading tabs does not form a code block https://github.com/Vanessa219/vditor/issues/162 1
                 blockElement.textContent.charAt(i) !== "\t") {
                 startSpace = false;
                 break;
@@ -42,7 +42,7 @@ export const input = (vditor: IVditor, range: Range, ignoreSpace = false, event?
             startSpace = false;
         }
 
-        // 结尾可以输入空格
+        // Trailing spaces allowed
         let endSpace = true;
         for (let i = startOffset - 1; i < blockElement.textContent.length; i++) {
             if (blockElement.textContent.charAt(i) !== " " && blockElement.textContent.charAt(i) !== "\n") {
@@ -66,11 +66,11 @@ export const input = (vditor: IVditor, range: Range, ignoreSpace = false, event?
         if (endSpace) {
             const markerElement = hasClosestByClassName(range.startContainer, "vditor-ir__marker");
             if (markerElement) {
-                // inline marker space https://github.com/Vanessa219/vditor/issues/239
+                // Inline marker space https://github.com/Vanessa219/vditor/issues/239
             } else {
                 const previousNode = range.startContainer.previousSibling as HTMLElement;
                 if (previousNode && previousNode.nodeType !== 3 && previousNode.classList.contains("vditor-ir__node--expand")) {
-                    // FireFox https://github.com/Vanessa219/vditor/issues/239
+                    // Firefox https://github.com/Vanessa219/vditor/issues/239
                     previousNode.classList.remove("vditor-ir__node--expand");
                 }
                 if (typeof vditor.options.input === "function") {
@@ -86,11 +86,11 @@ export const input = (vditor: IVditor, range: Range, ignoreSpace = false, event?
     });
 
     if (!blockElement) {
-        // 使用顶级块元素，应使用 innerHTML
+        // Use top-level block element; use innerHTML
         blockElement = vditor.ir.element;
     }
 
-    // document.exeComment insertHTML 会插入 wbr
+    // document.execCommand insertHTML inserts wbr
     if (!blockElement.querySelector("wbr")) {
         const previewRenderElement = hasClosestByClassName(range.startContainer, "vditor-ir__preview");
         if (previewRenderElement) {
@@ -100,13 +100,13 @@ export const input = (vditor: IVditor, range: Range, ignoreSpace = false, event?
         }
     }
 
-    // 清除浏览器自带的样式
+    // Remove browser default inline styles
     blockElement.querySelectorAll("[style]").forEach((item) => {
         item.removeAttribute("style");
     });
 
     if (blockElement.getAttribute("data-type") === "link-ref-defs-block") {
-        // 修改链接引用
+        // Modify link reference definitions
         blockElement = vditor.ir.element;
     }
 
@@ -115,18 +115,19 @@ export const input = (vditor: IVditor, range: Range, ignoreSpace = false, event?
     let html = "";
     if (!isIRElement) {
         const blockquoteElement = hasClosestByTag(range.startContainer, "BLOCKQUOTE");
-        // 列表需要到最顶层
+        // Lists should be at the top-most nesting level
         const topListElement = getTopList(range.startContainer);
         if (topListElement) {
             blockElement = topListElement;
         }
 
-        // 应到引用层，否则 > --- 会解析为 front-matter；列表中有 blockquote 则解析 blockquote；blockquote 中有列表则解析列表
+        // Should be at blockquote level; otherwise "> ---" may be parsed as front-matter.
+        // If a list contains a blockquote, parse as blockquote; if a blockquote contains a list, parse as list.
         if (blockquoteElement && (!topListElement || (topListElement && !blockquoteElement.contains(topListElement)))) {
             blockElement = blockquoteElement;
         }
 
-        // 修改脚注
+        // Modify footnotes
         if (footnoteElement) {
             blockElement = footnoteElement;
         }
@@ -134,7 +135,7 @@ export const input = (vditor: IVditor, range: Range, ignoreSpace = false, event?
         html = blockElement.outerHTML;
 
         if (blockElement.tagName === "UL" || blockElement.tagName === "OL") {
-            // 如果为列表的话，需要把上下的列表都重绘
+            // If it's a list, re-render adjacent lists as well
             const listPrevElement = blockElement.previousElementSibling;
             const listNextElement = blockElement.nextElementSibling;
             if (listPrevElement && (listPrevElement.tagName === "UL" || listPrevElement.tagName === "OL")) {
@@ -145,17 +146,17 @@ export const input = (vditor: IVditor, range: Range, ignoreSpace = false, event?
                 html = html + listNextElement.outerHTML;
                 listNextElement.remove();
             }
-            // firefox 列表回车不会产生新的 list item https://github.com/Vanessa219/vditor/issues/194
+            // Firefox: pressing Enter in a list may not create a new list item https://github.com/Vanessa219/vditor/issues/194
             html = html.replace("<div><wbr><br></div>", "<li><p><wbr><br></p></li>");
         } else if (blockElement.previousElementSibling &&
             blockElement.previousElementSibling.textContent.replace(Constants.ZWSP, "") !== "" &&
             event && event.inputType === "insertParagraph") {
-            // 换行时需要处理上一段落
+            // When inserting a new line, handle the previous paragraph
             html = blockElement.previousElementSibling.outerHTML + html;
             blockElement.previousElementSibling.remove();
         }
         if (!blockElement.innerText.startsWith("```")) {
-            // 添加链接引用
+            // Append link reference definitions
             vditor.ir.element.querySelectorAll("[data-type='link-ref-defs-block']").forEach((item) => {
                 if (item && !(blockElement as HTMLElement).isEqualNode(item)) {
                     html += item.outerHTML;
@@ -163,7 +164,7 @@ export const input = (vditor: IVditor, range: Range, ignoreSpace = false, event?
                 }
             });
 
-            // 添加脚注
+            // Append footnotes
             vditor.ir.element.querySelectorAll("[data-type='footnotes-block']").forEach((item) => {
                 if (item && !(blockElement as HTMLElement).isEqualNode(item)) {
                     html += item.outerHTML;
@@ -184,7 +185,7 @@ export const input = (vditor: IVditor, range: Range, ignoreSpace = false, event?
     } else {
         blockElement.outerHTML = html;
 
-        // 更新正文中的 tip
+        // Update tip inside the content
         if (footnoteElement) {
             const footnoteItemElement = hasClosestByAttribute(vditor.ir.element.querySelector("wbr"),
                 "data-type", "footnotes-def");
@@ -200,7 +201,7 @@ export const input = (vditor: IVditor, range: Range, ignoreSpace = false, event?
         }
     }
 
-    //  linkref 合并及添加
+    // Merge and append link reference definitions
     let firstLinkRefDefElement: HTMLElement;
     const allLinkRefDefsElement = vditor.ir.element.querySelectorAll("[data-type='link-ref-defs-block']");
     allLinkRefDefsElement.forEach((item: HTMLElement, index) => {
@@ -215,7 +216,7 @@ export const input = (vditor: IVditor, range: Range, ignoreSpace = false, event?
         vditor.ir.element.insertAdjacentElement("beforeend", allLinkRefDefsElement[0]);
     }
 
-    // 脚注合并后添加的末尾
+    // Append footnotes after merging
     let firstFootnoteElement: HTMLElement;
     const allFootnoteElement = vditor.ir.element.querySelectorAll("[data-type='footnotes-block']");
     allFootnoteElement.forEach((item: HTMLElement, index) => {

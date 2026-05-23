@@ -22,49 +22,49 @@ import {setContentTheme} from "./ts/ui/setContentTheme";
 
 class Vditor {
 
-    /** 点击图片放大 */
+    /** Click image to enlarge */
     public static adapterRender = adapterRender;
-    /** 点击图片放大 */
+    /** Click image to enlarge */
     public static previewImage = previewImage;
-    /** 为 element 中的代码块添加复制按钮 */
+    /** Add copy button to code blocks within element */
     public static codeRender = codeRender;
-    /** 对 graphviz 进行渲染 */
+    /** Render graphviz */
     public static graphvizRender = graphvizRender;
-    /** 为 element 中的代码块进行高亮渲染 */
+    /** Render syntax highlighting for code blocks within element */
     public static highlightRender = highlightRender;
-    /** 对数学公式进行渲染 */
+    /** Render mathematical formulas */
     public static mathRender = mathRender;
-    /** 流程图/时序图/甘特图渲染 */
+    /** Render flowchart, sequence, and Gantt diagrams */
     public static mermaidRender = mermaidRender;
-    /** 化学物质结构渲染 */
+    /** Render chemical structures */
     public static SMILESRender = SMILESRender;
-    /** 支持 markdown 的思维导图 */
+    /** Mindmap rendering from Markdown */
     public static markmapRender = markmapRender;
-    /** flowchart.js 渲染 */
+    /** Render using flowchart.js */
     public static flowchartRender = flowchartRender;
-    /** 图表渲染 */
+    /** Chart rendering */
     public static chartRender = chartRender;
-    /** 五线谱渲染 */
+    /** Music staff rendering (ABC notation) */
     public static abcRender = abcRender;
-    /** 脑图渲染 */
+    /** Mindmap rendering */
     public static mindmapRender = mindmapRender;
-    /** plantuml渲染 */
+    /** PlantUML rendering */
     public static plantumlRender = plantumlRender;
-    /** 大纲渲染 */
+    /** Outline rendering */
     public static outlineRender = outlineRender;
-    /** 为[特定链接](https://github.com/Vanessa219/vditor/issues/7)分别渲染为视频、音频、嵌入的 iframe */
+    /** Render [specific links](https://github.com/Vanessa219/vditor/issues/7) as video, audio, or embedded iframe respectively */
     public static mediaRender = mediaRender;
-    /** 对选中的文字进行阅读 */
+    /** Read selected text */
     public static speechRender = speechRender;
-    /** 对图片进行懒加载 */
+    /** Lazy-load images */
     public static lazyLoadImageRender = lazyLoadImageRender;
-    /** Markdown 文本转换为 HTML，该方法需使用[异步编程](https://ld246.com/article/1546828434083?r=Vaness) */
+    /** Convert Markdown text to HTML; this method uses asynchronous programming */
     public static md2html = md2html;
-    /** 页面 Markdown 文章渲染 */
+    /** Render page Markdown articles */
     public static preview = previewRender;
-    /** 设置代码主题 */
+    /** Set code theme */
     public static setCodeTheme = setCodeTheme;
-    /** 设置内容主题 */
+    /** Set content theme */
     public static setContentTheme = setContentTheme;
 }
 

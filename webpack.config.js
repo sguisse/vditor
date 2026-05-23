@@ -19,7 +19,7 @@ const banner = new webpack.BannerPlugin({
 
 MIT License
 
-Copyright (c) 2018-present B3log 开源, b3log.org
+Copyright (c) 2018-present B3log Open Source, b3log.org
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
